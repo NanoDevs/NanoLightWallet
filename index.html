@@ -2,8 +2,69 @@
 <html>
   <head>
     <title>Hello World!</title>
+	<script src="js/nacl.js"></script>
+	<script src="js/blake2b.js"></script>
+	<script src="js/functions.js"></script>
   </head>
   <body>
-    <h1>WIP</h1>
+    <img id="logo" src="img/logo.png"></img>
+    <h1 id="test2">WIP</h1>
+	<form id="submit"><input type="text" id="test4" /></form>
+	<button id="button2">Create seed and address</button>
+	<h3 id="test3">example</h3>
   </body>
+
+  <style>
+  #logo {
+  height: 120px;
+  }
+  </style>
+  <script src="node_modules/jquery/dist/jquery.min.js"></script>
+  <script>
+var Datastore = require('nedb');
+var path = require('path');
+console.log(path.join(process.cwd(), 'data.db'));
+var db = new Datastore({ filename: path.join(process.cwd(), 'data.db'), autoload: true });
+var net = require('net'),
+    JsonSocket = require('json-socket');
+	
+var port = 7077;
+var host = '127.0.0.1';
+var socket = new JsonSocket(new net.Socket());
+socket.connect(port, host);
+
+$("#button2").click(function() {
+	var seed = uint8_hex(nacl.randomBytes(32));
+      $("#test4").val(seed);
+	
+	  var index = hex_uint8(dec2hex(1, 4));
+	  var context = blake2bInit(32);
+	  blake2bUpdate(context, seed);
+	  blake2bUpdate(context, index);
+
+	  var newKey = blake2bFinal(context);
+	  var secret = uint8_hex(newKey);
+	  var address = accountFromHexKey(uint8_hex(nacl.sign.keyPair.fromSecretKey(newKey).publicKey));
+	  console.log(address);
+	  $("#test3").html(address);
+});
+
+$("#submit").submit(function(e) {
+    e.preventDefault();
+    var test = $("#test").val();
+	socket.sendMessage({msg: test});
+});
+
+socket.on('connect', function() {
+    socket.sendMessage({requestType: "getBlocksCount"});
+    socket.on('message', function(r) {
+	if (r.type == "BlocksCount") {
+		$("#test2").html(r.count);
+	}
+    });
+});
+socket.on('error', () => console.log('socket error'));
+
+  </script>
+  
 </html>

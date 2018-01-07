@@ -1,5 +1,14 @@
 {
   "name": "rai-light-client",
   "version": "1.0.0",
-  "main": "index.html"
+  "main": "index.html",
+  "single-instance": false,
+  "dependencies": {
+    "jquery": "^3.2.1",
+    "json-socket": "^0.3.0",
+    "nedb": "^1.8.0"
+  },
+  "window": {
+    "toolbar": true
+  }
 }
