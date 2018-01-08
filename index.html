@@ -13,6 +13,11 @@
 		</div>
 	</div>
     <div class="main">
+	<ul class="topmenu">
+		<li class="active">Home</li>
+		<li>Receive</li>
+		<li>Send</li>
+	</ul>
 		<div id="hello" style="text-align:  center;color: white;font-size: 80px;">Hello!</div>
 		<p style="color:  white;margin-top: -5px;text-align:  center;">I am your new RaiBlocks wallet!</p>
 		<p style="color: #e2ff00;font-size: 13px;text-align: center;font-weight:  normal;margin-top: -10px;">But i am a Work in Progress, come back later!</p>
@@ -53,6 +58,7 @@
 	.main {
 		margin-left: 180px;
 		padding: 0px 10px;
+		margin-top: 40px;
 	}
 	
 	#logo {
@@ -115,6 +121,40 @@
 		font-weight: 500;
 		letter-spacing: 0.5px;
 		user-select: none;
+	}
+	.topmenu {
+		margin-top: 0;
+		top: 0px;
+		margin-left: 180px;
+		text-align: center;
+		justify-content: space-between;
+		display: flex;
+		padding-left: 0;
+		padding-right: 0;
+		position: absolute;
+		left: 0;
+		right: 0;
+		background-color: black;
+		user-select: none;
+		cursor: pointer;
+	}
+	
+	.topmenu li {
+		display: inline-block;
+		padding: 10px;
+		position: static;
+		outline: black;
+		box-shadow: inset -2px 0px 0 #2a6e6f45;
+		outline-width: 1px;
+		width: 100%;
+		background-color: #35898b;
+	}
+	
+	.topmenu li.active {
+		border-bottom-color: #def58c;
+		border-bottom-width: 4px;
+		border-bottom-style:  solid;
+		border-spacing: 5px;
 	}
   </style>
   <script src="node_modules/jquery/dist/jquery.min.js"></script>
