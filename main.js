@@ -4,10 +4,15 @@ var Datastore = require('nedb');
 var db = new Datastore({ filename: path.join(process.cwd(), 'data.db'), autoload: true });
 
 // Set variables and load modules
-var crypto = require('crypto');
+var cryptom = require('crypto');
 var net = require('net');
 var JsonSocket = require('json-socket');
 var socket = new JsonSocket(new net.Socket());
+var nacl = require(path.join(process.cwd(), 'src/js/nacl.js'));
+
+// Get BrowserWindow.
+const { remote } = require('electron');
+const { BrowserWindow } = remote;
 
 var RaiWallet = require('rai-wallet');
 var Wallet = RaiWallet.Wallet;
@@ -49,9 +54,28 @@ socket.on('connect', function() {
     });
 });
 
-// Get BrowserWindow.
-const { remote } = require('electron');
-const { BrowserWindow } = remote;
+
+
+db.find({ type: 'wallet' }, function (err, docs) {
+	if(docs && docs.length){   
+		$( document ).ready(function() {
+			$( "#wallet1" ).removeClass('selected');
+			$( "#wallet2" ).addClass('selected');
+			$("#content").load( "pages/index.pg" );
+		});
+	} else {
+		$( document ).ready(function() {
+			$( "#wallet1" ).addClass('selected');
+			$( "#wallet2" ).removeClass('selected');
+			$("#content").load( "pages/create.pg");
+		});
+		
+	}
+});
+
+
+
+// EVENTS
 
 // Close the app on button close click
 $("#closebtn").click(function() {
@@ -66,43 +90,41 @@ $("#minbtn").click(function() {
 });
 
 // Click on home, load a "default" page, for now.
-$("#homebtn").click(function() {
+/* $("#homebtn").click(function() {
 	$("#content").html(
 	`<div id="hello" style="text-align:  center;color: white;font-size: 80px;">Hello!</div>
-		<p style="color:  white;margin-top: -5px;text-align:  center;">I am your new RaiBlocks wallet!</p>
-		<p style="color: #e2ff00;font-size: 13px;text-align: center;font-weight:  normal;margin-top: -10px;">But i am a Work in Progress, come back later!</p>
+		<p style="color:  white;margin-top: -5px;text-align:  center;font-size: 23px;">I am your new RaiBlocks wallet!</p>
+		
 		<br>
 		<div class="createwallet">
-			<span>Choose a password:</span>
+			<span>Please, choose a strong password to create your wallet:</span>
 			<form id="submit"><input type="password" id="mypassword"></form>
 			<button id="create">Create!</button>
 			<p id="created"></p>
         </div>
 		<script>
 		$("#create").click(function() {
-			$("#created").html("Sorry, i am not ready to do this, yet ;(");
-		});
-		
-		$("#button2").click(function() {
-			var seed = uint8_hex(nacl.randomBytes(32));
-			  $("#test4").val(seed);
-			
-			  var index = hex_uint8(dec2hex(1, 4));
-			  var context = blake2bInit(32);
-			  blake2bUpdate(context, seed);
-			  blake2bUpdate(context, index);
-
-			  var newKey = blake2bFinal(context);
-			  var secret = uint8_hex(newKey);
-			  var address = accountFromHexKey(uint8_hex(nacl.sign.keyPair.fromSecretKey(newKey).publicKey));
-			  console.log(address);
-			  $("#test3").html(address);
+			$("#created").html("Created!");
 		});
 		</script>
-		
-
 	`);
-});
+}); */
+
+// FUNCTIONS
+
+function encrypt(text, password){
+  var cipher = cryptom.createCipher('aes-256-cbc',password);
+  var crypted = cipher.update(text,'utf8','hex');
+  crypted += cipher.final('hex');
+  return crypted;
+}
+
+function decrypt(text, password){
+  var decipher = cryptom.createDecipher('aes-256-cbc',password);
+  var dec = decipher.update(text,'hex','utf8');
+  dec += decipher.final('utf8');
+  return dec;
+}
 
 // Dev stupid things, for testing.		
 $("#submit").submit(function(e) {

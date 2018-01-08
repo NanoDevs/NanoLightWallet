@@ -1,0 +1,84 @@
+<div id="hello" style="text-align:  center;color: white;font-size: 80px;">Hello!</div>
+<p style="color:  white;margin-top: -5px;text-align:  center;font-size: 23px;">I am your new RaiBlocks wallet!</p>
+<br>
+<div id="createwallet">
+	<span>Do you want to create a new wallet or import from a seed?</span>
+	<br>
+	<button id="create">Create new Wallet</button>
+	<button id="seed">Import from Seed</button>
+</div>
+<style>
+#createwallet {
+	text-align: center;
+}
+button {
+	margin-top: 10px;
+	background-color: #1ba79f;
+	border: none;
+	color: white;
+	padding: 10px 15px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	cursor: pointer;
+	font-size: 16px;
+	user-select: none;
+}
+button:hover {
+	background-color: #1fc0c3;
+}
+button:focus {
+	outline: 0;
+}
+</style>
+<form id="submit">
+<script>
+var seed;
+$("#create").click(function() {
+	seed = uint8_hex(nacl.randomBytes(32));
+	$("#createwallet").html('<span>Ok, we will create a new wallet for you. Please choose a secure password to protect your funds!</span>\
+	<input type="password" id="mypassword"></form><br>\
+	<button id="finish">I created a secure password</button>\
+	<p id="created"></p>');
+	finishclick();
+});
+
+$("#seed").click(function() {
+	$("#createwallet").html('<span>Ok, please put your seed here:</span>\
+	<input type="text" id="seed"></form><br>\
+	<button id="gopass">I put my seed correctly</button>');
+	$("#gopass").click(function() {
+		seed = $("#seed").val();
+		$("#createwallet").html('<span>Now you need create a secure password, it will protect your funds.</span><br>\
+		<input type="password" id="mypassword"></form><br>\
+		<button id="finish">I created a secure password</button>\
+		<p id="created"></p>');
+		finishclick();
+	});
+});
+
+function finishclick() {
+	$("#finish").click(function() {
+		var password = $("#mypassword").val();
+		
+		var index = hex_uint8(dec2hex(0, 4));
+		var context = blake2bInit(32);
+		blake2bUpdate(context, hex_uint8(seed));
+		blake2bUpdate(context, index);
+		var newKey = blake2bFinal(context);
+		var secret = uint8_hex(newKey);
+		var address = accountFromHexKey(uint8_hex(nacl.sign.keyPair.fromSecretKey(newKey).publicKey));
+
+		var seedb = encrypt(seed, password);
+		secretdb = encrypt(secret, password);
+		
+		db.insert([{ type: 'wallet', seed: seedb, address: address, secret: secretdb }], function (err, newDoc) {});
+		$("#created").html("Created!");
+		setTimeout(function () {
+			$( "#wallet1" ).removeClass('selected');
+			$( "#wallet2" ).addClass('selected');
+			$("#content").load( "pages/index.pg" );
+		},1000)			
+	});
+}
+</script>

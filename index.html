@@ -10,11 +10,11 @@
 			<h1 id="title">RAIBLOCKS</h1>
         </div>
 		<div class="wallets">
-			<div class="wallet first" >
+			<div id="wallet1" class="wallet first" >
 				<a>CREATE NEW WALLET</a>
 			</div>
-			<div class="wallet selected" >
-				<a>WALLET TEST</a>
+			<div id="wallet2" class="wallet" >
+				<a>WALLET</a>
 			</div>
 		</div>
 		<div class="settings">
@@ -29,8 +29,7 @@
 		<li style="width: 5%;" id="minbtn"><i class="fa fa-minus" aria-hidden="true" style="margin-top: 4px;"></i></li><li style="width: 5%;" id="closebtn"><i class="fa fa-power-off" aria-hidden="true" style=""></i></li>
 	</ul>
 	<div id="content"> 
-		<p id="bltx">BALANCE</p>
-		<p id="blvl">%VALUE% XRB</p>
+
 	</div>
 		<h2 class="bottom" id="block"></h2><h2 class="bottom" id="version">BETA 0.0.1</h2>
 	</div>
@@ -105,29 +104,6 @@
 		border-right-width: 4px;
 		border-right-style: solid;
 	}
-	
-	.createwallet {
-		text-align: center;
-	}
-	button#create {
-		margin-top: 10px;
-		background-color: #1ba79f;
-		border: none;
-		color: white;
-		padding: 10px 15px;
-		text-align: center;
-		text-decoration: none;
-		display: inline-block;
-		cursor: pointer;
-		font-size: 16px;
-		user-select: none;
-	}
-	button#create:hover {
-		background-color: #1fc0c3;
-	}
-	button#create:focus {
-		outline: 0;
-	}
 	.bottom {
 		position: absolute;
 		bottom: 0;
@@ -182,20 +158,6 @@
 		border-bottom-width: 4px;
 		border-bottom-style:  solid;
 		border-spacing: 5px;
-	}
-	#bltx {
-		text-align: center;
-		margin-top: 15vh;
-		font-size: 15px;
-		letter-spacing: 1.5px;
-		user-select: none;
-		cursor: default;
-	}
-	#blvl {
-		text-align: center;
-		color: #def58c;
-		margin: 0;
-		font-size: 40px;
 	}
 	.settings {
 		position: absolute;
