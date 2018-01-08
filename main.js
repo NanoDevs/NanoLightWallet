@@ -11,8 +11,8 @@ var socket = new JsonSocket(new net.Socket());
 var nacl = require(path.join(process.cwd(), 'src/js/nacl.js'));
 
 // Get BrowserWindow.
-const { remote } = require('electron');
-const { BrowserWindow } = remote;
+var gui = require('nw.gui');
+var win = gui.Window.get();
 
 var RaiWallet = require('rai-wallet');
 var Wallet = RaiWallet.Wallet;
@@ -77,14 +77,11 @@ db.find({ type: 'wallet' }, function (err, docs) {
 
 // Close the app on button close click
 $("#closebtn").click(function() {
-	var window = BrowserWindow.getFocusedWindow();
-	window.close();
+	win.close();
 });
 
-// Minimise the app on button close click
 $("#minbtn").click(function() {
-	var window = BrowserWindow.getFocusedWindow();
-	window.minimize();
+	win.minimize();
 });
 
 // Click on home, load a "default" page, for now.
