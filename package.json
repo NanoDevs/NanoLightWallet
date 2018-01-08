@@ -9,6 +9,8 @@
     "nedb": "^1.8.0"
   },
   "window": {
-    "toolbar": true
+    "toolbar": true,
+    "icon": "img/logo.png"
+  
   }
 }

@@ -1,70 +1,102 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Hello World!</title>
-	<script src="js/nacl.js"></script>
-	<script src="js/blake2b.js"></script>
-	<script src="js/functions.js"></script>
+    <title>RaiBlocks Light Wallet</title>
+	<link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/trueno" type="text/css"/>
   </head>
   <body>
-    <img id="logo" src="img/logo.png"></img>
-    <h1 id="test2">WIP</h1>
-	<form id="submit"><input type="text" id="test4" /></form>
-	<button id="button2">Create seed and address</button>
-	<h3 id="test3">example</h3>
+	<div class="sidebar">
+		<img id="logo" src="img/logo.png"></img>
+		<h1 id="title">RAIBLOCKS</h1>
+		<div class="accounts" >
+			<a>CREATE MY WALLET</a>
+		</div>
+	</div>
+    <div class="main">
+		<div id="hello" style="text-align:  center;color: white;font-size: 80px;">Hello!</div>
+		<p style="color:  white;margin-top: -5px;text-align:  center;">I am your new RaiBlocks wallet!</p>
+		<p style="color: #e2ff00;font-size: 13px;text-align: center;font-weight:  normal;margin-top: -10px;">But i am a Work in Progress, come back later!</p>
+		<br>
+		<div class="createwallet">
+			<span>Choose a password:</span>
+			<form id="submit"><input type="password" id="mypassword"></form>
+			<button id="create">Create!</button>
+			<p id="created"></p>
+        </div>
+		<h2 id="test2" style="
+		position: absolute;
+		bottom: 0;
+		z-index:  1;
+		margin-bottom: 10px;
+		color:  white;
+		font-size: 13px;
+		font-weight:  normal;
+		letter-spacing: 0.5px;
+		">4900011</h2>
+	</div>
   </body>
 
   <style>
-  #logo {
-  height: 120px;
-  }
+	body {
+		background-color: #2e8284;
+		font-family: 'TruenoRegular';
+		color: white;
+	}
+	.sidebar {
+		height: 100%;
+		width: 160px;
+		position: fixed;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		background-color: white;
+		overflow-x: hidden;
+		padding-top: 20px;
+		text-align: center;
+		user-select: none;
+		-webkit-user-drag: none;
+	}
+	.main {
+		margin-left: 160px; /* Same as the width of the sidebar */
+		padding: 0px 10px;
+	}
+	
+	#logo {
+		display: block;
+		margin: 0 auto;
+		height: 120px;
+	}
+	#title {
+		font-size: 14px;
+		letter-spacing: 1px;
+		color: #36927e;
+	}
+	.accounts {
+		margin-top: 7vh;
+		border-color: #80808026;
+		font-size: 10px;
+		height: 30px;
+		padding-top: 15px;
+		border-width: 2px;
+		background-color: #8080800f;
+		border-left-width: 0px;
+		border-style: solid;
+		cursor: pointer;
+		letter-spacing: 0.3px;
+		color: #36927e;
+		font-weight:  bold;
+		user-select: none;
+		border-right-color: #00d200;
+		border-right-width: 4px;
+	}
+	.createwallet {
+		text-align: center;
+	}
   </style>
   <script src="node_modules/jquery/dist/jquery.min.js"></script>
-  <script>
-var Datastore = require('nedb');
-var path = require('path');
-console.log(path.join(process.cwd(), 'data.db'));
-var db = new Datastore({ filename: path.join(process.cwd(), 'data.db'), autoload: true });
-var net = require('net'),
-    JsonSocket = require('json-socket');
-	
-var port = 7077;
-var host = '127.0.0.1';
-var socket = new JsonSocket(new net.Socket());
-socket.connect(port, host);
-
-$("#button2").click(function() {
-	var seed = uint8_hex(nacl.randomBytes(32));
-      $("#test4").val(seed);
-	
-	  var index = hex_uint8(dec2hex(1, 4));
-	  var context = blake2bInit(32);
-	  blake2bUpdate(context, seed);
-	  blake2bUpdate(context, index);
-
-	  var newKey = blake2bFinal(context);
-	  var secret = uint8_hex(newKey);
-	  var address = accountFromHexKey(uint8_hex(nacl.sign.keyPair.fromSecretKey(newKey).publicKey));
-	  console.log(address);
-	  $("#test3").html(address);
-});
-
-$("#submit").submit(function(e) {
-    e.preventDefault();
-    var test = $("#test").val();
-	socket.sendMessage({msg: test});
-});
-
-socket.on('connect', function() {
-    socket.sendMessage({requestType: "getBlocksCount"});
-    socket.on('message', function(r) {
-	if (r.type == "BlocksCount") {
-		$("#test2").html(r.count);
-	}
-    });
-});
-socket.on('error', () => console.log('socket error'));
-
-  </script>
+  <script src="js/nacl.js"></script>
+  <script src="js/blake2b.js"></script>
+  <script src="js/functions.js"></script>
+  <script src="main.js"></script>
   
 </html>

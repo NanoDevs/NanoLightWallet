@@ -64,3 +64,5 @@ dev-private/
 data.db
 
 package-lock.json
+
+test.js
