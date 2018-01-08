@@ -57,7 +57,7 @@ socket.on('connect', function() {
 
 
 db.find({ type: 'wallet' }, function (err, docs) {
-	if(docs && docs.length){   
+	if(docs && docs.length){
 		$( document ).ready(function() {
 			$( "#wallet1" ).removeClass('selected');
 			$( "#wallet2" ).addClass('selected');
@@ -72,8 +72,6 @@ db.find({ type: 'wallet' }, function (err, docs) {
 		
 	}
 });
-
-
 
 // EVENTS
 

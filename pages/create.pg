@@ -61,6 +61,17 @@ function finishclick() {
 	$("#finish").click(function() {
 		var password = $("#mypassword").val();
 		
+		mywallet = new Wallet(password);
+		mywallet.createWallet(seed);
+		var pack = mywallet.pack();
+		
+/*		testwallet = new Wallet(password);
+		try{
+			testwallet.load(pack);
+		}catch(e){
+			console.log(e);
+		} */
+		
 		var index = hex_uint8(dec2hex(0, 4));
 		var context = blake2bInit(32);
 		blake2bUpdate(context, hex_uint8(seed));
@@ -72,7 +83,7 @@ function finishclick() {
 		var seedb = encrypt(seed, password);
 		secretdb = encrypt(secret, password);
 		
-		db.insert([{ type: 'wallet', seed: seedb, address: address, secret: secretdb }], function (err, newDoc) {});
+		db.insert([{ type: 'wallet', seed: seedb, address: address, secret: secretdb, pack: pack }], function (err, newDoc) {});
 		$("#created").html("Created!");
 		setTimeout(function () {
 			$( "#wallet1" ).removeClass('selected');
