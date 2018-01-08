@@ -1,0 +1,38 @@
+<p id="address"></p>
+<p id="bltx">BALANCE</p>
+<p id="blvl"></p>
+<style>
+#address {
+    margin-top: 15vh;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(110, 250, 255, 0.31);
+}
+#bltx {
+	text-align: center;
+	font-size: 15px;
+	letter-spacing: 1.5px;
+	user-select: none;
+	cursor: default;
+}
+#blvl {
+	text-align: center;
+	color: #def58c;
+	margin: 0;
+	font-size: 40px;
+}
+</style>
+<script>
+db.find({ type: 'wallet' }, function (err, docs) {
+	console.log(docs);
+	$("#address").html(docs[0].address);
+    socket.sendMessage({requestType: "getBalance", address: docs[0].address});
+    socket.on('message', function(r) {
+		if (r.type == "Balance") {
+			$("#blvl").html(r.balance+" XRB");
+		} 
+	});
+});
+
+
+</script>

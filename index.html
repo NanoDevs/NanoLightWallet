@@ -9,18 +9,27 @@
 			<img id="logo" src="src/img/logo.png">
 			<h1 id="title">RAIBLOCKS</h1>
         </div>
-		<div class="accounts" >
-			<a>CREATE MY WALLET</a>
+		<div class="wallets">
+			<div id="wallet1" class="wallet first" >
+				<a>CREATE NEW WALLET</a>
+			</div>
+			<div id="wallet2" class="wallet" >
+				<a>WALLET</a>
+			</div>
+		</div>
+		<div class="settings">
+			<a><i class="fa fa-cog" aria-hidden="true"></i> Settings</a>
 		</div>
 	</div>
     <div class="main">
 	<ul class="topmenu">
-		<li class="active" id="homebtn">Home</li>
-		<li>Receive</li>
-		<li>Send</li>
-		<li style="width: 5%;"><i class="fa fa-minus" id="minbtn" aria-hidden="true" style="margin-top: 4px;"></i></li><li style="width: 5%;"><i class="fa fa-power-off" id="closebtn" aria-hidden="true" style=""></i></li>
+		<li class="active" id="homebtn"><i class="fa fa-home" aria-hidden="true"></i> Home</li>
+		<li><i class="fa fa-bank" aria-hidden="true"></i> Receive</li>
+		<li><i class="fa fa-paper-plane" aria-hidden="true"></i> Send</li>
+		<li style="width: 5%;" id="minbtn"><i class="fa fa-minus" aria-hidden="true" style="margin-top: 4px;"></i></li><li style="width: 5%;" id="closebtn"><i class="fa fa-power-off" aria-hidden="true" style=""></i></li>
 	</ul>
 	<div id="content"> 
+
 	</div>
 		<h2 class="bottom" id="block"></h2><h2 class="bottom" id="version">BETA 0.0.1</h2>
 	</div>
@@ -51,6 +60,7 @@
 	.top-sidebar {
 		padding-top: 20px;
 		-webkit-app-region: drag;
+		margin-bottom: 7vh;
 	}
 	.main {
 		margin-left: 180px;
@@ -70,45 +80,29 @@
 		letter-spacing: 1px;
 		color: #36927e;
 	}
-	.accounts {
-		margin-top: 7vh;
-		border-color: #80808026;
+	.wallet {
+		border-color: rgba(128, 128, 128, 0.08);
 		font-size: 10px;
 		height: 30px;
 		padding-top: 15px;
 		border-width: 2px;
-		background-color: #8080800f;
-		border-left-width: 0px;
+		background-color: rgba(128, 128, 128, 0.01);
+		border-left-style: none;
+		border-right-style: none;
 		border-style: solid;
 		cursor: pointer;
 		letter-spacing: 0.3px;
 		color: #36927e;
 		font-weight:  bold;
 		user-select: none;
+	}
+	.wallet.first {
+		border-bottom-style: none;
+	}
+	.wallet.selected {
 		border-right-color: #def58c;
 		border-right-width: 4px;
-	}
-	.createwallet {
-		text-align: center;
-	}
-	button#create {
-		margin-top: 10px;
-		background-color: #1ba79f;
-		border: none;
-		color: white;
-		padding: 10px 15px;
-		text-align: center;
-		text-decoration: none;
-		display: inline-block;
-		cursor: pointer;
-		font-size: 16px;
-		user-select: none;
-	}
-	button#create:hover {
-		background-color: #1fc0c3;
-	}
-	button#create:focus {
-		outline: 0;
+		border-right-style: solid;
 	}
 	.bottom {
 		position: absolute;
@@ -120,6 +114,7 @@
 		font-weight: 500;
 		letter-spacing: 0.5px;
 		user-select: none;
+		cursor: default;
 	}
 	#version {
 		right: 10px;
@@ -164,10 +159,19 @@
 		border-bottom-style:  solid;
 		border-spacing: 5px;
 	}
+	.settings {
+		position: absolute;
+		color: #36927e;
+		bottom: 4%;
+		font-size: 20px;
+		left: 20%;
+		cursor: pointer;
+		user-select: none;
+	}
   </style>
   <link rel="stylesheet" href="src/css/trueno.css" type="text/css"/>
   <link rel="stylesheet" href="src/css/font-awesome.min.css">
-  <script src="node_modules/jquery/dist/jquery.min.js"></script>
+  <script>window.$ = window.jQuery = require('jquery');</script>
   <script src="src/js/nacl.js"></script>
   <script src="src/js/blake2b.js"></script>
   <script src="src/js/functions.js"></script>
