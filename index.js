@@ -10,17 +10,16 @@ const url = require('url')
 let mainWindow
 
 function createWindow () {
-  mainWindow = new BrowserWindow({width: 650, height: 500, minWidth:650, minHeight:500, frame: false, show: false})
+  mainWindow = new BrowserWindow({width: 680, height: 500, minWidth:650, minHeight:500, frame: false, show: false})
   
-
   mainWindow.loadURL(url.format({
     pathname: path.join(__dirname, 'index.html'),
     protocol: 'file:',
     slashes: true
   }))
-  setTimeout(function(){ 
+  mainWindow.webContents.on('dom-ready', () => {
     mainWindow.show();
-  }, 500);
+  })
 
   mainWindow.on('closed', function () {
     mainWindow = null
