@@ -23,28 +23,22 @@
 			<button id="create">Create!</button>
 			<p id="created"></p>
         </div>
-		<h2 id="test2" style="
-		position: absolute;
-		bottom: 0;
-		z-index:  1;
-		margin-bottom: 10px;
-		color:  white;
-		font-size: 13px;
-		font-weight:  normal;
-		letter-spacing: 0.5px;
-		">4900011</h2>
+		<h2 id="block"></h2>
 	</div>
   </body>
 
   <style>
+	html {
+		height: 100%;
+	}
 	body {
-		background-color: #2e8284;
+		background: linear-gradient(#2c7d7e, #39929a);
 		font-family: 'TruenoRegular';
 		color: white;
 	}
 	.sidebar {
 		height: 100%;
-		width: 160px;
+		width: 180px;
 		position: fixed;
 		z-index: 1;
 		top: 0;
@@ -57,14 +51,14 @@
 		-webkit-user-drag: none;
 	}
 	.main {
-		margin-left: 160px; /* Same as the width of the sidebar */
+		margin-left: 180px;
 		padding: 0px 10px;
 	}
 	
 	#logo {
 		display: block;
 		margin: 0 auto;
-		height: 120px;
+		height: 100px;
 	}
 	#title {
 		font-size: 14px;
@@ -91,6 +85,36 @@
 	}
 	.createwallet {
 		text-align: center;
+	}
+	button#create {
+		margin-top: 10px;
+		background-color: #1ba79f;
+		border: none;
+		color: white;
+		padding: 10px 15px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		cursor: pointer;
+		font-size: 16px;
+		user-select: none;
+	}
+	button#create:hover {
+		background-color: #1fc0c3;
+	}
+	button#create:focus {
+		outline: 0;
+	}
+	#block {
+		position: absolute;
+		bottom: 0;
+		z-index: 1;
+		margin-bottom: 10px;
+		color: #ffffffb0;
+		font-size: 11px;
+		font-weight: 500;
+		letter-spacing: 0.5px;
+		user-select: none;
 	}
   </style>
   <script src="node_modules/jquery/dist/jquery.min.js"></script>

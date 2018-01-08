@@ -4,11 +4,17 @@ var db = new Datastore({ filename: path.join(process.cwd(), 'data.db'), autoload
 var net = require('net');
 var JsonSocket = require('json-socket');
 var crypto = require('crypto');
+var RaiWallet = require('rai-wallet');
+var Wallet = RaiWallet.Wallet;
 
 var port = 7077;
 var host = '127.0.0.1';
 var socket = new JsonSocket(new net.Socket());
-socket.connect(port, host);
+
+function start() {
+	socket.connect(port, host);
+}
+start();
 
 $("#create").click(function() {
 	$("#created").html("Sorry, i'm not ready to do this, yet ;(");
@@ -38,10 +44,16 @@ $("#submit").submit(function(e) {
 
 socket.on('connect', function() {
     socket.sendMessage({requestType: "getBlocksCount"});
+//	socket.sendMessage({requestType: "getBalance", address: "xrb_39ymww61tksoddjh1e43mprw5r8uu1318it9z3agm7e6f96kg4ndqg9tuds4"});
+//	socket.sendMessage({requestType: "getInfo", address: "xrb_39ymww61tksoddjh1e43mprw5r8uu1318it9z3agm7e6f96kg4ndqg9tuds4"});
     socket.on('message', function(r) {
 	if (r.type == "BlocksCount") {
-		$("#test2").html(r.count);
+		$("#block").html("Block: "+r.count);
+	} else {
+		console.log(r);
 	}
     });
 });
-socket.on('error', () => console.log('socket error'));
+socket.on('error', function() {
+	setTimeout(start, 1000);
+});
