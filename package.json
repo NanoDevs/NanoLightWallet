@@ -10,9 +10,10 @@
     "rai-wallet": "^0.1.8"
   },
   "window": {
+    "frame": false,
     "toolbar": true,
-    "icon": "img/logo.png",
+    "icon": "src/img/logo.png",
     "min_width": 650,
-    "min_height": 450
+    "min_height": 500
   }
 }
