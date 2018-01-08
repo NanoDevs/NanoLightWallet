@@ -1,19 +1,16 @@
 {
   "name": "rai-light-client",
   "version": "1.0.0",
-  "main": "index.html",
-  "single-instance": false,
+  "scripts": {
+    "start": "electron ."
+  },
   "dependencies": {
     "jquery": "^3.2.1",
     "json-socket": "^0.3.0",
     "nedb": "^1.8.0",
     "rai-wallet": "^0.1.8"
   },
-  "window": {
-    "frame": false,
-    "toolbar": true,
-    "icon": "src/img/logo.png",
-    "min_width": 650,
-    "min_height": 500
+  "devDependencies": {
+    "electron": "~1.7.8"
   }
 }

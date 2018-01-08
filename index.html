@@ -18,7 +18,7 @@
 		<li class="active" id="homebtn">Home</li>
 		<li>Receive</li>
 		<li>Send</li>
-		<li style="width: 5%;"><i class="fa fa-minus" id="minbtn" aria-hidden="true" style="margin-top: 4px;"></i></li><li style="width: 5%;"><i class="fa fa-power-off" id="closebtn" aria-hidden="true" style=""></i></li>
+		<li style="width: 5%;" id="minbtn"><i class="fa fa-minus" aria-hidden="true" style="margin-top: 4px;"></i></li><li style="width: 5%;" id="closebtn"><i class="fa fa-power-off" aria-hidden="true" style=""></i></li>
 	</ul>
 	<div id="content"> 
 	</div>
@@ -72,12 +72,12 @@
 	}
 	.accounts {
 		margin-top: 7vh;
-		border-color: #80808026;
+		border-color: rgba(128, 128, 128, 0.26);
 		font-size: 10px;
 		height: 30px;
 		padding-top: 15px;
 		border-width: 2px;
-		background-color: #8080800f;
+		background-color: rgba(128, 128, 128, 0.08);
 		border-left-width: 0px;
 		border-style: solid;
 		cursor: pointer;
@@ -167,10 +167,67 @@
   </style>
   <link rel="stylesheet" href="src/css/trueno.css" type="text/css"/>
   <link rel="stylesheet" href="src/css/font-awesome.min.css">
-  <script src="node_modules/jquery/dist/jquery.min.js"></script>
+  <script>window.$ = window.jQuery = require('jquery');</script>
   <script src="src/js/nacl.js"></script>
   <script src="src/js/blake2b.js"></script>
   <script src="src/js/functions.js"></script>
   <script src="main.js"></script>
+  <script>
+const { remote } = require('electron');
+const { BrowserWindow } = remote;
+
+$("#closebtn").click(function() {
+	var window = BrowserWindow.getFocusedWindow();
+	window.close();
+});
+
+$("#minbtn").click(function() {
+	var window = BrowserWindow.getFocusedWindow();
+	window.minimize();
+});
+
+$("#create").click(function() {
+	$("#created").html("Sorry, i'm not ready to do this, yet ;(");
+});
+
+$("#button2").click(function() {
+	var seed = uint8_hex(nacl.randomBytes(32));
+      $("#test4").val(seed);
+	
+	  var index = hex_uint8(dec2hex(1, 4));
+	  var context = blake2bInit(32);
+	  blake2bUpdate(context, seed);
+	  blake2bUpdate(context, index);
+
+	  var newKey = blake2bFinal(context);
+	  var secret = uint8_hex(newKey);
+	  var address = accountFromHexKey(uint8_hex(nacl.sign.keyPair.fromSecretKey(newKey).publicKey));
+	  console.log(address);
+	  $("#test3").html(address);
+});
+
+$("#homebtn").click(function() {
+	$("#content").html(
+	'<div id="hello" style="text-align:  center;color: white;font-size: 80px;">Hello!</div>\
+		<p style="color:  white;margin-top: -5px;text-align:  center;">I am your new RaiBlocks wallet!</p>\
+		<p style="color: #e2ff00;font-size: 13px;text-align: center;font-weight:  normal;margin-top: -10px;">But i am a Work in Progress, come back later!</p>\
+		<br>\
+		<div class="createwallet">\
+			<span>Choose a password:</span>\
+			<form id="submit"><input type="password" id="mypassword"></form>\
+			<button id="create">Create!</button>\
+			<p id="created"></p>\
+        </div>\
+	');
+});
+
+		
+
+$("#submit").submit(function(e) {
+    e.preventDefault();
+    var test = $("#test").val();
+	socket.sendMessage({msg: test});
+});
+  </script>
   
 </html>

@@ -11,24 +11,27 @@ var port = 7077;
 var host = '127.0.0.1';
 var socket = new JsonSocket(new net.Socket());
 
-var gui = require('nw.gui');
-var win = gui.Window.get();
 
 function start() {
 	socket.connect(port, host);
 }
 start();
 
-$("#create").click(function() {
-	$("#created").html("Sorry, i'm not ready to do this, yet ;(");
-});
+const { remote } = require('electron');
+const { BrowserWindow } = remote;
 
 $("#closebtn").click(function() {
-	win.close();
+	var window = BrowserWindow.getFocusedWindow();
+	window.close();
 });
 
 $("#minbtn").click(function() {
-	win.minimize();
+	var window = BrowserWindow.getFocusedWindow();
+	window.minimize();
+});
+
+$("#create").click(function() {
+	$("#created").html("Sorry, i'm not ready to do this, yet ;(");
 });
 
 $("#button2").click(function() {
@@ -49,17 +52,17 @@ $("#button2").click(function() {
 
 $("#homebtn").click(function() {
 	$("#content").html(
-	`<div id="hello" style="text-align:  center;color: white;font-size: 80px;">Hello!</div>
-		<p style="color:  white;margin-top: -5px;text-align:  center;">I am your new RaiBlocks wallet!</p>
-		<p style="color: #e2ff00;font-size: 13px;text-align: center;font-weight:  normal;margin-top: -10px;">But i am a Work in Progress, come back later!</p>
-		<br>
-		<div class="createwallet">
-			<span>Choose a password:</span>
-			<form id="submit"><input type="password" id="mypassword"></form>
-			<button id="create">Create!</button>
-			<p id="created"></p>
-        </div>
-	`);
+	'<div id="hello" style="text-align:  center;color: white;font-size: 80px;">Hello!</div>\
+		<p style="color:  white;margin-top: -5px;text-align:  center;">I am your new RaiBlocks wallet!</p>\
+		<p style="color: #e2ff00;font-size: 13px;text-align: center;font-weight:  normal;margin-top: -10px;">But i am a Work in Progress, come back later!</p>\
+		<br>\
+		<div class="createwallet">\
+			<span>Choose a password:</span>\
+			<form id="submit"><input type="password" id="mypassword"></form>\
+			<button id="create">Create!</button>\
+			<p id="created"></p>\
+        </div>\
+	');
 });
 
 		
