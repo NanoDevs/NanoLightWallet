@@ -18,7 +18,6 @@ var RaiWallet = require('rai-wallet');
 var Wallet = RaiWallet.Wallet;
 
 // Configure RaiLightServer:
-
 var port = 7077;
 var host = '127.0.0.1';
 
@@ -54,8 +53,6 @@ socket.on('connect', function() {
     });
 });
 
-
-
 db.find({ type: 'wallet' }, function (err, docs) {
 	if(docs && docs.length){
 		$( document ).ready(function() {
@@ -68,8 +65,7 @@ db.find({ type: 'wallet' }, function (err, docs) {
 			$( "#wallet1" ).addClass('selected');
 			$( "#wallet2" ).removeClass('selected');
 			$("#content").load( "pages/create.pg");
-		});
-		
+		});		
 	}
 });
 
