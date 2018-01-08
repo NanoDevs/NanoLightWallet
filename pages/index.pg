@@ -1,5 +1,5 @@
 <p id="address"></p>
-<p id="bltx">BALANCE</p>
+<p id="bltx"></p>
 <p id="blvl"></p>
 <style>
 #address {
