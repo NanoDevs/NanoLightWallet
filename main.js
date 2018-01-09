@@ -8,7 +8,7 @@ var cryptom = require('crypto');
 var net = require('net');
 var JsonSocket = require('json-socket');
 var socket = new JsonSocket(new net.Socket());
-var nacl = require(path.join(process.cwd(), 'src/js/nacl.js'));
+var nacl = require('./src/js/nacl.js');
 var BigNumber = require('bignumber.js');
 var bigInt = require("big-integer");
 var balance;
@@ -18,9 +18,10 @@ var myaddress;
 const {remote} = require('electron');
 const {BrowserWindow} = remote;
 
-var RaiWallet = require('rai-wallet');
-var Wallet = RaiWallet.Wallet;
-mywallet = new Wallet();
+
+var RaiWallet  = require('./src/js/Wallet');
+var Block = require('./src/js/Block');
+wallet = new RaiWallet();
 
 // Configure RaiLightServer:
 
@@ -44,9 +45,9 @@ db.find({ type: 'wallet' }, function (err, docs) {
 	if(docs && docs.length){
 		myaddress = docs[0].address;
 		checkChains();
-		mywallet = new Wallet("123");
+		wallet = new RaiWallet("123");
 		try{
-			mywallet.load(docs[0].pack);
+			wallet.load(docs[0].pack);
 			console.log("wallet loaded");
 		}catch(e){
 			console.log(e);
@@ -91,7 +92,7 @@ socket.on('connect', function() {
 					console.log( r.blocks[account][hash].amount);
 					
 					try {
-						mywallet.addPendingReceiveBlock(hash, account, r.blocks[account][hash].source, r.blocks[account][hash].amount);
+						wallet.addPendingReceiveBlock(hash, account, r.blocks[account][hash].source, r.blocks[account][hash].amount);
 						console.log("success");
 					}
 					catch(err) {
@@ -102,18 +103,6 @@ socket.on('connect', function() {
 				});
 			});
 			//socket.sendMessage({requestType: "getPendingBlocks", addresses: ["xrb_1ce75trhhmqxxmpe3cny93eb3niacxwpx85nsxricrzg6zzbaz4j9zoss59n"]});
-//			$.each( Object.keys(r.blocks), function( key, value ) {
-//			  console.log( key + ": " + value );
-//			});
-/*			for(var key in data.res) {
-				for(let i in data.res[account].blocks) {
-					var blk = data.res[account].blocks[i];
-					if(wallet.addPendingReceiveBlock(blk.hash, account, blk.from, blk.amount)) {
-						var txObj = {account: account, amount: bigInt(blk.amount), date: blk.from, hash: blk.hash}
-						addRecentRecToGui(txObj);
-					}
-				}
-			} */
 		} else {
 			// Debug, for now.
 			console.log(r);
@@ -141,9 +130,9 @@ $("#homebtn").click(function() {
 	$( "#wallet2" ).addClass('selected');
 	$("#content").load( "pages/index.pg" );
 	db.find({ type: 'wallet' }, function (err, docs) {
-		mywallet = new Wallet("123");
+		wallet = new RaiWallet("123");
 		try{
-			mywallet.load(docs[0].pack);
+			wallet.load(docs[0].pack);
 		}catch(e){
 			console.log(e);
 		}
@@ -170,7 +159,7 @@ function decrypt(text, password){
 
 function clientPoW() {
 	
-	var pool = mywallet.getWorkPool();
+	var pool = wallet.getWorkPool();
 
 	var hash = false;
 	if(pool.length > 0) {
@@ -188,7 +177,7 @@ function clientPoW() {
 			console.log('Working locally on ' + hash);
 		}, function(work) {
 			console.log('PoW found for ' + hash + ": " + work);
-			mywallet.updateWorkPool(hash, work);
+			wallet.updateWorkPool(hash, work);
 			setTimeout(clientPoW, 1000);
 		});
 	} else {
@@ -198,7 +187,7 @@ function clientPoW() {
 setTimeout(clientPoW, 1000);
 
 function checkReadyBlocks(){
-	var blk = mywallet.getNextReadyBlock();
+	var blk = wallet.getNextReadyBlock();
 	if(blk !== false)
 		broadcastBlock(blk);
 	setTimeout(checkReadyBlocks, 1500);
@@ -217,13 +206,13 @@ function broadcastBlock(blk){
     socket.sendMessage({requestType: "processBlock", block: json});
     socket.on('message', function(r) {
 		if (r.type == "processResponse") {
-			mywallet.removeReadyBlock(hash);
+			wallet.removeReadyBlock(hash);
 		}
 	});
 }
 
 function checkChains() {
-	var accs = mywallet.getAccounts();
+	var accs = wallet.getAccounts();
 	var r = {};
 	for (var i in accs) {
 		if (accs[i].lastHash === false) r.push(accs[i].account);
@@ -241,12 +230,12 @@ function checkChains() {
 			
 			index.forEach(function(val, key){
 				try{
-					var blk = new RaiWallet.Block();
+					var blk = new Block();
 					blk.buildFromJSON(blocks[val].contents);
 					blk.setAccount(myaddress);
 					blk.setAmount(blocks[val].amount);
 					blk.setImmutable(true);
-					mywallet.importBlock(blk, myaddress, false);
+					wallet.importBlock(blk, myaddress, false);
 					console.log("Hash "+val+" loaded")
 				}catch(e){
 					console.log(e);
@@ -254,8 +243,8 @@ function checkChains() {
 
 			});
 			setTimeout(checkReadyBlocks, 1000);
-			mywallet.useAccount(myaddress);
-			mywallet.setAccountBalancePublic(balance, myaddress);
+			wallet.useAccount(myaddress);
+			wallet.setAccountBalancePublic(balance, myaddress);
 		}
 	});
 }
