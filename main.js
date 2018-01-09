@@ -21,6 +21,7 @@ var Wallet = RaiWallet.Wallet;
 mywallet = new Wallet();
 
 // Configure RaiLightServer:
+
 var port = 7077;
 var host = '127.0.0.1';
 
@@ -35,58 +36,29 @@ socket.on('error', function() {
 	setTimeout(start, 1000);
 });
 
-<<<<<<< HEAD
 
 // DATABASE AND WALLET LOAD
 db.find({ type: 'wallet' }, function (err, docs) {
 	if(docs && docs.length){
-		$( document ).ready(function() {
+		mywallet = new Wallet("123");
+		try{
+			mywallet.load(docs[0].pack);
+			console.log("wallet loaded");
+		}catch(e){
+			console.log(e);
+		}
+		$(document).ready(function() {
 			$( "#wallet1" ).removeClass('selected');
 			$( "#wallet2" ).addClass('selected');
 			$("#content").load( "pages/index.pg" );
-			mywallet = new Wallet("123");
-			try{
-				mywallet.load(docs[0].pack);
-				console.log("wallet loaded");
-			}catch(e){
-				console.log(e);
-			}
-=======
-// On RaiLightServer sucess connection:
-socket.on('connect', function() {
-	// Get first BlockCount ;)
-	socket.sendMessage({requestType: "getBlocksCount"});
-
-	//	socket.sendMessage({requestType: "getBalance", address: "xrb_39ymww61tksoddjh1e43mprw5r8uu1318it9z3agm7e6f96kg4ndqg9tuds4"});
-	//	socket.sendMessage({requestType: "getInfo", address: "xrb_39ymww61tksoddjh1e43mprw5r8uu1318it9z3agm7e6f96kg4ndqg9tuds4"});
-
-	// Handle RaiLightServer responses
-	socket.on('message', function(r) {
-		// If BlocksCount
-		if (r.type == "BlocksCount") {
-			// Update on frontend
-			$("#block").html("Block: "+r.count);
-		} else {
-			// Debug, for now.
-			console.log(r);
-		}
-    });
-});
-
-db.find({type: 'wallet'}, function (err, docs) {
-	if(docs && docs.length){
-		$(document).ready(function() {
-			$("#wallet1").removeClass('selected');
-			$("#wallet2").addClass('selected');
-			$("#content").load("pages/index.pg");
->>>>>>> bc8abb998c41925d67a56ed246fc43ce92da8844
 		});
 	} else {
 		$(document).ready(function() {
 			$("#wallet1").addClass('selected');
 			$("#wallet2").removeClass('selected');
 			$("#content").load("pages/create.pg");
-		});		
+		});
+		
 	}
 });
 
