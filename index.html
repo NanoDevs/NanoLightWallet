@@ -172,9 +172,11 @@
   <link rel="stylesheet" href="src/css/trueno.css" type="text/css"/>
   <link rel="stylesheet" href="src/css/font-awesome.min.css">
   <script>window.$ = window.jQuery = require('jquery');</script>
+  <script>const {webFrame} = require('electron');webFrame.registerURLSchemeAsPrivileged('file', { bypassCSP: false });</script>
   <script src="src/js/nacl.js"></script>
   <script src="src/js/blake2b.js"></script>
   <script src="src/js/functions.js"></script>
+  <script src="src/js/startThreads.js"></script>
   <script src="main.js"></script>
   
 </html>

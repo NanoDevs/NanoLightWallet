@@ -29,7 +29,9 @@ db.find({ type: 'wallet' }, function (err, docs) {
     socket.sendMessage({requestType: "getBalance", address: docs[0].address});
     socket.on('message', function(r) {
 		if (r.type == "Balance") {
-			$("#blvl").html(r.balance+" XRB");
+			balance = new BigNumber(r.balance);
+			balance = balance.dividedBy('1e+30');
+			$("#blvl").html(balance.toFixed(6)+" XRB");
 		} 
 	});
 });
