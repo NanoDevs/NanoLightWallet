@@ -1,5 +1,5 @@
-<div id="hello" style="text-align:  center;color: white;font-size: 80px;">Hello!</div>
-<p style="color:  white;margin-top: -5px;text-align:  center;font-size: 23px;">I am your new RaiBlocks wallet!</p>
+<div id="hello" style="text-align:  center;color: white;font-size: 70px;">Hello!</div>
+<p style="color:  white;margin-top: -5px;text-align:  center;font-size: 25px;">I am your new RaiBlocks wallet!</p>
 <br>
 <div id="createwallet">
 	<span>Do you want to create a new wallet or import from a seed?</span>
@@ -82,7 +82,7 @@ function finishclick() {
 			$( "#wallet1" ).removeClass('selected');
 			$( "#wallet2" ).addClass('selected');
 			$("#content").load( "pages/index.pg" );
-		},1000)			
+		},1000)
 	});
 }
 </script>

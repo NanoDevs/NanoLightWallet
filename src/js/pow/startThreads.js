@@ -1,5 +1,5 @@
 var pow_initiate = function(threads, worker_path) {
-	if (typeof worker_path == 'undefined') { worker_path = 'src/js/'; }
+	if (typeof worker_path == 'undefined') { worker_path = 'src/js/pow/'; }
 	if (isNaN(threads)) { threads = self.navigator.hardwareConcurrency - 1; }
 	var workers = [];
 	for (let i = 0; i < threads; i++) {

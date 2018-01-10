@@ -10,7 +10,7 @@ var Buffer = require('buffer').Buffer;
 var blake = require('blakejs');
 var bigInt = require('big-integer');
 var Logger = require('./Logger');
-var nacl = require('./nacl'); //We are using a forked version of tweetnacl, so need to import nacl
+var nacl = require('../lib/nacl'); //We are using a forked version of tweetnacl, so need to import nacl
 
 
 var MAIN_NET_WORK_THRESHOLD = "ffffffc000000000";
@@ -602,6 +602,10 @@ module.exports = function (password) {
     _private.setBalance(newBalance);
     api.useAccount(keys[temp].account);
   };
+  
+  api.setAccountBalancePublic = function (newBalance, acc) {
+    _private.setAccountBalance(newBalance, acc);
+  };
 
   _private.sumAccountPending = function (acc, amount) {
     var temp = current;
@@ -965,7 +969,7 @@ module.exports = function (password) {
    * @throws An exception if the previous block does not match the last chain block
    * @throws An exception if the chain is empty and the block is not of type open
    */
-  api.confirmBlock = function (blockHash) {
+  api.confirmBlock = function (blockHash, broadcast) {
     var blk = api.getPendingBlockByHash(blockHash);
     if (blk) {
       if (blk.ready()) {
@@ -974,7 +978,8 @@ module.exports = function (password) {
           // open block
           if (blk.getType() != 'open') throw "First block needs to be 'open'.";
           chain.push(blk);
-          readyBlocks.push(blk);
+		  if (typeof broadcast == 'undefined') { broadcast = true; }
+		  if (broadcast) readyBlocks.push(blk);
           api.removePendingBlock(blockHash);
           _private.setPendingBalance(api.getPendingBalance().minus(blk.getAmount()));
           _private.setBalance(api.getBalance().add(blk.getAmount()));
@@ -999,7 +1004,7 @@ module.exports = function (password) {
               _private.setRepresentative(blk.getRepresentative());
             } else throw "Invalid block type";
             chain.push(blk);
-            readyBlocks.push(blk);
+            if (broadcast) readyBlocks.push(blk);
             api.removePendingBlock(blockHash);
             api.recalculateWalletBalances();
             _private.save();
@@ -1020,7 +1025,9 @@ module.exports = function (password) {
     }
   };
 
-  api.importBlock = function (blk, acc) {
+  api.importBlock = function (blk, acc, broadcast) {
+	if (typeof broadcast == 'undefined') { broadcast = true; }
+	
     api.useAccount(acc);
     blk.setAccount(acc);
     if (!blk.ready()) throw "Block should be complete.";
@@ -1039,7 +1046,7 @@ module.exports = function (password) {
     pendingBlocks.push(blk);
     walletPendingBlocks.push(blk);
     _private.save();
-    api.confirmBlock(blk.getHash(true));
+    api.confirmBlock(blk.getHash(true), broadcast);
   };
 
   api.importForkedBlock = function (blk, acc) {

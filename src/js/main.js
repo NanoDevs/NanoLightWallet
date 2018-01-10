@@ -1,65 +1,50 @@
-// Create database for things.
-var path = require('path');
-var Datastore = require('nedb');
-var db = new Datastore({filename: path.join(process.cwd(), 'data.db'), autoload: true});
-
 // Set variables and load modules
+var path = require('path');
+var db = require('./src/js/db.js');
 var cryptom = require('crypto');
 var net = require('net');
 var JsonSocket = require('json-socket');
 var socket = new JsonSocket(new net.Socket());
-var nacl = require('./src/js/nacl.js');
+var nacl = require('./src/js/lib/nacl.js');
 var BigNumber = require('bignumber.js');
 var bigInt = require("big-integer");
 var https = require('https');
 var balance;
-var myaddress;
 var price;
+var wallet;
+var walletloaded = false;
+var myaddress;
 
 // Get BrowserWindow.
 const {remote} = require('electron');
 const {BrowserWindow} = remote;
 
-var RaiWallet  = require('./src/js/Wallet');
-var Block = require('./src/js/Block');
-wallet = new RaiWallet();
+var RaiWallet  = require('./src/js/rai-wallet/Wallet');
+var Block = require('./src/js/rai-wallet/Block');
 
 // Configure RaiLightServer:
 
 var port = 7077;
 var host = '127.0.0.1';
 
-// DATABASE AND WALLET LOAD
-db.find({ type: 'wallet' }, function (err, docs) {
-	if(docs && docs.length){
-		myaddress = docs[0].address;
-		wallet = new RaiWallet("123");
-		try{
-			wallet.load(docs[0].pack);
-			console.log("wallet loaded");
-			checkChains();
-		}catch(e){
-			console.log(e);
-		}
-		$("#content").load( "pages/index.pg" );
+// WALLET LOAD
+BrowserWindow.getAllWindows()[0].show();
+db.getWallet(function (exists, pack) {
+	if (exists) {
+		$("#content").load( "pages/login.pg" );
 		$( "#wallet1" ).removeClass('selected');
 		$( "#wallet2" ).addClass('selected');
-		setTimeout(function() {
-			BrowserWindow.getAllWindows()[0].show();
-		}, 200);
-		
 	} else {
-		setTimeout(function() {
-			BrowserWindow.getAllWindows()[0].show();
-		}, 200);
 		$(document).ready(function() {
 			$("#wallet1").addClass('selected');
 			$("#wallet2").removeClass('selected');
 			$("#content").load("pages/create.pg");
 		});
-		
 	}
 });
+
+
+
 
 // Connect to RaiLightServer (yes, will be decentralized, later)
 function start() {
@@ -131,15 +116,15 @@ $("#minbtn").click(function() {
 
 
 $("#homebtn").click(function() {
-	$( "#wallet1" ).removeClass('selected');
-	$( "#wallet2" ).addClass('selected');
-	$("#content").load( "pages/index.pg" );
-	db.find({ type: 'wallet' }, function (err, docs) {
-		wallet = new RaiWallet("123");
-		try{
-			wallet.load(docs[0].pack);
-		}catch(e){
-			console.log(e);
+	db.getWallet(function (exists, pack) {
+		if (exists) {
+			$("#wallet1").removeClass('selected');
+			$("#wallet2").addClass('selected');
+			$("#content").load( "pages/index.pg" );
+		} else {
+			$("#wallet1").addClass('selected');
+			$("#wallet2").removeClass('selected');
+			$("#content").load("pages/create.pg");
 		}
 	});
 });
@@ -160,6 +145,14 @@ function decrypt(text, password){
 	return dec;
 }
 
+function walletLoaded(cb) {
+	if (walletloaded) {
+		cb();
+	} else {
+		setTimeout(walletLoaded, 100, cb);
+	}
+}
+
 // LOCAL POW
 
 function clientPoW() {
@@ -177,7 +170,7 @@ function clientPoW() {
 		if(hash === false) {
 			return setTimeout(clientPoW, 1000);
 		}
-		pow_workers = pow_initiate(NaN, 'src/js/');
+		pow_workers = pow_initiate(NaN, 'src/js/pow/');
 		pow_callback(pow_workers, hash, function() {
 			console.log('Working locally on ' + hash);
 		}, function(work) {
@@ -189,7 +182,6 @@ function clientPoW() {
 		setTimeout(clientPoW, 1000);
 	}
 }
-setTimeout(clientPoW, 1000);
 
 function checkReadyBlocks(){
 	var blk = wallet.getNextReadyBlock();
@@ -239,7 +231,6 @@ function checkChains() {
 					blk.setAmount(blocks[val].amount);
 					blk.setImmutable(true);
 					wallet.importBlock(blk, myaddress, false);
-					wallet.removeReadyBlock(val);
 				}catch(e){
 					console.log(e);
 				}
@@ -247,7 +238,6 @@ function checkChains() {
 			});
 			setTimeout(checkReadyBlocks, 1000);
 			wallet.useAccount(myaddress);
-			wallet.setAccountBalancePublic(balance, myaddress);
 		}
 	});
 }

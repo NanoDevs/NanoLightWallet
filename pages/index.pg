@@ -45,11 +45,18 @@ function getPrice() {
 }
 getPrice();
 
-db.find({ type: 'wallet' }, function (err, docs) {
-	$("#address").html(docs[0].address);
-    socket.sendMessage({requestType: "getBalance", address: docs[0].address});
-    socket.on('message', function(r) {
+walletLoaded(function () {
+	var accs = wallet.getAccounts();
+	for(let i in accs) {
+		var acc = accs[i].account;
+		//var bal = accs[i].balance;
+		$("#address").html(accs[i].account);
+		socket.sendMessage({requestType: "getBalance", address: accs[i].account});
+	}
+	socket.on('message', function(r) {
 		if (r.type == "Balance") {
+			var accs = wallet.getAccounts();
+			wallet.setAccountBalancePublic(r.balance, accs[0].account);
 			balance = new BigNumber(r.balance);
 			balance = balance.dividedBy('1e+30');
 			$("#blvl").html(balance.toFixed(6)+" XRB");
@@ -62,5 +69,4 @@ db.find({ type: 'wallet' }, function (err, docs) {
 		setTimeout(updateBalFiat, 200);
 	}
 });
-
 </script>
