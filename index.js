@@ -16,6 +16,10 @@ function createWindow () {
     protocol: 'file:',
     slashes: true
   }))
+  // On DOM Ready, show the window, its better ;)
+  mainWindow.webContents.on('dom-ready', () => {
+    mainWindow.show();
+  })
 
   mainWindow.on('closed', function () {
     mainWindow = null

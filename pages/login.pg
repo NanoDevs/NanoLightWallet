@@ -44,7 +44,7 @@ db.getWallet(function (exists, pack) {
 		wallet = new RaiWallet(password);
 		try{
 			wallet.load(pack);
-			var accs = wallet.getAccounts();
+			accs = wallet.getAccounts();
 			myaddress = accs[0].account;
 			checkChains(function (){
 				console.log("wallet loaded");

@@ -715,7 +715,7 @@ module.exports = function (password) {
     return blk;
   };
 
-  api.addPendingReceiveBlock = function (sourceBlockHash, acc, from) {
+  api.addPendingReceiveBlock = function (sourceBlockHash, acc, from, amount) {
 
     var amount = bigInt(amount);
     api.useAccount(acc);

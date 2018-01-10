@@ -57,71 +57,22 @@ td, th {
 }
 </style>
 <script>
-
-function getPrice() {
-	https.get('https://api.coinmarketcap.com/v1/ticker/raiblocks/', (res) => {
-		let body = "";
-		res.on("data", data => {
-			body += data;
-		});  
-		res.on("end", () => {
-			body = JSON.parse(body);
-			price = body[0].price_usd;
-			setTimeout(getPrice, 10000);
-		 });
-	});
-}
-getPrice();
-
-walletLoaded(function () {
-	var accs = wallet.getAccounts();
-	for(let i in accs) {
-		var acc = accs[i].account;
-		//var bal = accs[i].balance;
-		$("#address").html(accs[i].account);
-		socket.sendMessage({requestType: "getBalance", address: accs[i].account});
-
+function update(){
+	setTimeout(update, 100);
+	if (typeof balance != 'undefined') {
+		$("#blvl").html(balance.toFixed(6)+" XRB");
 	}
-	
-	
-	socket.on('message', function(r) {
-		if (r.type == "Balance") {
-/*			wallet.setAccountBalancePublic(r.balance, accs[0].account);
-			balance = new BigNumber(r.balance);
-			balance = balance.dividedBy('1e+30');
-			$("#blvl").html(balance.toFixed(6)+" XRB");
-			var blks = wallet.getLastNBlocks(parseXRBAccount(accs[0].account), 20, 0);
-			
-			$('#thetable tr').not(':first').not(':last').remove();
-			var html = '';
-			
-			for(let i in blks){
-				html += '<tr><td>' + blks[i].getType() + '</td><td>' + blks[i].getAmount().over("1000000000000000000000000").toJSNumber() / 1000000 + ' XRB</td></tr>' ;
-			}
-			$('#thetable tr').first().after(html);
-			updateBalFiat(); */
-		} 
-		if (r.type == "balanceUpdate" || r.type == "Balance") {
-			console.log("updating balance");
-			wallet.setAccountBalancePublic(r.balance, accs[0].account);
-			balance = new BigNumber(r.balance);
-			balance = balance.dividedBy('1e+30');
-			$("#blvl").html(balance.toFixed(6)+" XRB");
-			var blks = wallet.getLastNBlocks(parseXRBAccount(accs[0].account), 20, 0);
-			
-			var html = '';
-			
-			for(let i in blks){
-				html += '<tr><td>' + blks[i].getType() + '</td><td>' + blks[i].getAmount().over("1000000000000000000000000").toJSNumber() / 1000000 + ' XRB</td></tr>' ;
-			}
-			$('#thetable tr').html(html);
-			updateBalFiat();
-		} 
-	});
-	function updateBalFiat() {
-		if (typeof price == 'undefined') {price = 0;}
+	if (typeof blks != 'undefined') {
+		blks = wallet.getLastNBlocks(parseXRBAccount(accs[0].account), 20, 0);
+		var html = '';
+		for(let i in blks){
+			html += '<tr><td>' + blks[i].getType() + '</td><td>' + blks[i].getAmount().over("1000000000000000000000000").toJSNumber() / 1000000 + ' XRB</td></tr>' ;
+		}
+		$('#thetable tr').html(html);
+	}
+	if (typeof price != 'undefined' && typeof balance != 'undefined') {
 		$("#blvf").html("$ "+balance.times(price).toFixed(2)+" USD");
-		setTimeout(updateBalFiat, 200);
 	}
-});
+}
+update();
 </script>

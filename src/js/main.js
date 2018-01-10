@@ -9,11 +9,13 @@ var nacl = require('./src/js/lib/nacl.js');
 var BigNumber = require('bignumber.js');
 var bigInt = require("big-integer");
 var https = require('https');
+var accs;
 var balance;
 var price;
 var wallet;
 var walletloaded = false;
 var myaddress;
+var blks;
 
 // Get BrowserWindow.
 const {remote} = require('electron');
@@ -57,6 +59,19 @@ socket.on('error', function() {
 // On RaiLightServer sucess connection:
 socket.on('connect', function() {
 	walletLoaded(function (){
+		var accs = wallet.getAccounts();
+		for(let i in accs) {
+			var acc = accs[i].account;
+			//var bal = accs[i].balance;
+			$("#address").html(accs[i].account);
+			socket.sendMessage({requestType: "getBalance", address: accs[i].account});
+		}
+		socket.on('message', function(r) {
+			if (r.type == "balanceUpdate" || r.type == "Balance") {
+				
+			}
+		});
+
 		console.log("connected registered");
 		socket.sendMessage({requestType: "registerAddresses", addresses: [myaddress]});
 	});
@@ -89,8 +104,13 @@ socket.on('connect', function() {
 				});
 			});
 			//socket.sendMessage({requestType: "getPendingBlocks", addresses: ["xrb_1ce75trhhmqxxmpe3cny93eb3niacxwpx85nsxricrzg6zzbaz4j9zoss59n"]});
-		} else if (r.type == "balanceUpdate") {
+		} else if (r.type == "balanceUpdate" || r.type == "Balance") {
 			walletLoaded(function () {
+				console.log(r);
+				balance = new BigNumber(r.balance);
+				balance = balance.dividedBy('1e+30');
+				blks = wallet.getLastNBlocks(parseXRBAccount(accs[0].account), 20, 0);
+				wallet.setAccountBalancePublic(r.balance, accs[0].account);
 				socket.sendMessage({requestType: "getPendingBlocks", addresses: [r.address]});
 			});
 
@@ -113,21 +133,6 @@ $("#closebtn").click(function() {
 $("#minbtn").click(function() {
 	var window = BrowserWindow.getFocusedWindow();
 	window.minimize();
-});
-
-
-$("#homebtn").click(function() {
-	db.getWallet(function (exists, pack) {
-		if (exists) {
-			$("#wallet1").removeClass('selected');
-			$("#wallet2").addClass('selected');
-			$("#content").load( "pages/index.pg" );
-		} else {
-			$("#wallet1").addClass('selected');
-			$("#wallet2").removeClass('selected');
-			$("#content").load("pages/create.pg");
-		}
-	});
 });
 
 // FUNCTIONS
@@ -209,7 +214,6 @@ function broadcastBlock(blk){
 }
 
 function checkChains(cb) {
-	var accs = wallet.getAccounts();
 	var r = {};
 	for (var i in accs) {
 		if (accs[i].lastHash === false) r.push(accs[i].account);
@@ -251,6 +255,21 @@ function checkChains(cb) {
 		}
 	});
 }
+
+function getPrice() {
+	https.get('https://api.coinmarketcap.com/v1/ticker/raiblocks/', (res) => {
+		let body = "";
+		res.on("data", data => {
+			body += data;
+		});  
+		res.on("end", () => {
+			body = JSON.parse(body);
+			price = body[0].price_usd;
+			setTimeout(getPrice, 10000);
+		 });
+	});
+}
+getPrice();
 
 
 // Dev stupid things, for testing.		
