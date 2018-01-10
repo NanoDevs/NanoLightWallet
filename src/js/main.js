@@ -43,9 +43,6 @@ db.getWallet(function (exists, pack) {
 	}
 });
 
-
-
-
 // Connect to RaiLightServer (yes, will be decentralized, later)
 function start() {
 	socket.connect(port, host);
@@ -59,9 +56,12 @@ socket.on('error', function() {
 
 // On RaiLightServer sucess connection:
 socket.on('connect', function() {
+	walletLoaded(function (){
+		console.log("connected registered");
+		socket.sendMessage({requestType: "registerAddresses", addresses: [myaddress]});
+	});
 	// Get first BlockCount ;)
     socket.sendMessage({requestType: "getBlocksCount"});
-
 //	socket.sendMessage({requestType: "getBalance", address: "xrb_39ymww61tksoddjh1e43mprw5r8uu1318it9z3agm7e6f96kg4ndqg9tuds4"});
 //	socket.sendMessage({requestType: "getInfo", address: "xrb_39ymww61tksoddjh1e43mprw5r8uu1318it9z3agm7e6f96kg4ndqg9tuds4"});
 //  socket.sendMessage({requestType: "getPendingBlocks", addresses: ["xrb_1ce75trhhmqxxmpe3cny93eb3niacxwpx85nsxricrzg6zzbaz4j9zoss59n"]});
@@ -73,26 +73,27 @@ socket.on('connect', function() {
 			// Update on frontend
 			$("#block").html("Block: "+r.count);
 		} else if (r.type == "PendingBlocks") {
-			
+			// Add pending blocks to PoW
 			Object.keys(r.blocks).forEach(function(account){
 				Object.keys(r.blocks[account]).forEach(function(hash){
 					console.log( hash );
 					console.log( account );
 					console.log( r.blocks[account][hash].source);
 					console.log( r.blocks[account][hash].amount);
-					
 					try {
 						wallet.addPendingReceiveBlock(hash, account, r.blocks[account][hash].source, r.blocks[account][hash].amount);
-						console.log("success");
 					}
 					catch(err) {
-						console.log("erro "+err);
+						console.log(err);
 					}
-					
-
 				});
 			});
 			//socket.sendMessage({requestType: "getPendingBlocks", addresses: ["xrb_1ce75trhhmqxxmpe3cny93eb3niacxwpx85nsxricrzg6zzbaz4j9zoss59n"]});
+		} else if (r.type == "balanceUpdate") {
+			walletLoaded(function () {
+				socket.sendMessage({requestType: "getPendingBlocks", addresses: [r.address]});
+			});
+
 		} else {
 			// Debug, for now.
 			console.log(r);
@@ -208,7 +209,7 @@ function broadcastBlock(blk){
 	});
 }
 
-function checkChains() {
+function checkChains(cb) {
 	var accs = wallet.getAccounts();
 	var r = {};
 	for (var i in accs) {
@@ -238,6 +239,7 @@ function checkChains() {
 			});
 			setTimeout(checkReadyBlocks, 1000);
 			wallet.useAccount(myaddress);
+			cb();
 		}
 	});
 }

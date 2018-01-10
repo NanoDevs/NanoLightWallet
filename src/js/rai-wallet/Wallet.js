@@ -892,7 +892,7 @@ module.exports = function (password) {
             walletPendingBlocks[j].setWork(work);
             var aux = walletPendingBlocks[j];
             try {
-              api.confirmBlock(aux.getHash(true));
+              api.confirmBlock(aux.getHash(true), true);
               remoteWork.splice(i, 1);
               api.setWorkNeeded(aux.getHash(true));
               return true;

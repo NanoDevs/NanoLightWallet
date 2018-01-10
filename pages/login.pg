@@ -31,6 +31,9 @@ button:hover {
 button:focus {
 	outline: 0;
 }
+#mypassword {
+    margin-top: 15px;
+}
 </style>
 
 <script>
@@ -43,10 +46,11 @@ db.getWallet(function (exists, pack) {
 			wallet.load(pack);
 			var accs = wallet.getAccounts();
 			myaddress = accs[0].account;
-			checkChains();
-			console.log("wallet loaded");
-			clientPoW();
-			walletloaded = true;
+			checkChains(function (){
+				console.log("wallet loaded");
+				clientPoW();
+				walletloaded = true;
+			});
 			$("#content").load( "pages/index.pg" );
 			$("#wallet1").removeClass('selected');
 			$("#wallet2").addClass('selected');

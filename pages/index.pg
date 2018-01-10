@@ -52,10 +52,18 @@ walletLoaded(function () {
 		//var bal = accs[i].balance;
 		$("#address").html(accs[i].account);
 		socket.sendMessage({requestType: "getBalance", address: accs[i].account});
+
 	}
 	socket.on('message', function(r) {
 		if (r.type == "Balance") {
-			var accs = wallet.getAccounts();
+			wallet.setAccountBalancePublic(r.balance, accs[0].account);
+			balance = new BigNumber(r.balance);
+			balance = balance.dividedBy('1e+30');
+			$("#blvl").html(balance.toFixed(6)+" XRB");
+			updateBalFiat();
+		} 
+		if (r.type == "balanceUpdate") {
+			console.log("updating balance");
 			wallet.setAccountBalancePublic(r.balance, accs[0].account);
 			balance = new BigNumber(r.balance);
 			balance = balance.dividedBy('1e+30');
