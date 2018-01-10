@@ -3,7 +3,9 @@ var dbfile = new Datastore({filename: path.join(process.cwd(), 'data.db'), autol
 
 var createWallet = exports.createWallet = function createWallet(seed, pack) {
 	dbfile.insert([{ type: 'wallet', seed: seed, pack: pack }], function (err, doc) {
-		console.log(err);
+		if (err) {
+			console.log(err);
+		}
 	});
 };
 

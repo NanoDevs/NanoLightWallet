@@ -70,19 +70,24 @@ function finishclick() {
 		blake2bUpdate(context, hex_uint8(seed));
 		blake2bUpdate(context, index);
 		var newKey = blake2bFinal(context);
-		var secret = uint8_hex(newKey);
+//		var secret = uint8_hex(newKey);
 		var address = accountFromHexKey(uint8_hex(nacl.sign.keyPair.fromSecretKey(newKey).publicKey));
 
 		var seedb = encrypt(seed, password);
-		secretdb = encrypt(secret, password);
 		
-		db.insert([{ type: 'wallet', seed: seedb, address: address, secret: secretdb, pack: pack }], function (err, newDoc) {});
+		db.createWallet(seedb, pack);
 		$("#created").html("Created!");
 		setTimeout(function () {
+			var accs = wallet.getAccounts();
+			myaddress = accs[0].account;
+			checkChains();
+			console.log("wallet loaded");
+			clientPoW();
+			walletloaded = true;
 			$( "#wallet1" ).removeClass('selected');
 			$( "#wallet2" ).addClass('selected');
 			$("#content").load( "pages/index.pg" );
-		},1000)
+		}, 800)
 	});
 }
 </script>
