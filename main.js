@@ -11,13 +11,14 @@ var socket = new JsonSocket(new net.Socket());
 var nacl = require('./src/js/nacl.js');
 var BigNumber = require('bignumber.js');
 var bigInt = require("big-integer");
+var https = require('https');
 var balance;
 var myaddress;
+var price;
 
 // Get BrowserWindow.
 const {remote} = require('electron');
 const {BrowserWindow} = remote;
-
 
 var RaiWallet  = require('./src/js/Wallet');
 var Block = require('./src/js/Block');
@@ -28,6 +29,38 @@ wallet = new RaiWallet();
 var port = 7077;
 var host = '127.0.0.1';
 
+// DATABASE AND WALLET LOAD
+db.find({ type: 'wallet' }, function (err, docs) {
+	if(docs && docs.length){
+		myaddress = docs[0].address;
+		wallet = new RaiWallet("123");
+		try{
+			wallet.load(docs[0].pack);
+			console.log("wallet loaded");
+			checkChains();
+		}catch(e){
+			console.log(e);
+		}
+		$("#content").load( "pages/index.pg" );
+		$( "#wallet1" ).removeClass('selected');
+		$( "#wallet2" ).addClass('selected');
+		setTimeout(function() {
+			BrowserWindow.getAllWindows()[0].show();
+		}, 200);
+		
+	} else {
+		setTimeout(function() {
+			BrowserWindow.getAllWindows()[0].show();
+		}, 200);
+		$(document).ready(function() {
+			$("#wallet1").addClass('selected');
+			$("#wallet2").removeClass('selected');
+			$("#content").load("pages/create.pg");
+		});
+		
+	}
+});
+
 // Connect to RaiLightServer (yes, will be decentralized, later)
 function start() {
 	socket.connect(port, host);
@@ -37,34 +70,6 @@ start();
 // If can't connect, try again (and again.. again..)
 socket.on('error', function() {
 	setTimeout(start, 1000);
-});
-
-
-// DATABASE AND WALLET LOAD
-db.find({ type: 'wallet' }, function (err, docs) {
-	if(docs && docs.length){
-		myaddress = docs[0].address;
-		checkChains();
-		wallet = new RaiWallet("123");
-		try{
-			wallet.load(docs[0].pack);
-			console.log("wallet loaded");
-		}catch(e){
-			console.log(e);
-		}
-		$(document).ready(function() {
-			$( "#wallet1" ).removeClass('selected');
-			$( "#wallet2" ).addClass('selected');
-			$("#content").load( "pages/index.pg" );
-		});
-	} else {
-		$(document).ready(function() {
-			$("#wallet1").addClass('selected');
-			$("#wallet2").removeClass('selected');
-			$("#content").load("pages/create.pg");
-		});
-		
-	}
 });
 
 // On RaiLightServer sucess connection:
@@ -217,14 +222,12 @@ function checkChains() {
 	for (var i in accs) {
 		if (accs[i].lastHash === false) r.push(accs[i].account);
 	}
-	console.log(myaddress);
+
 	socket.sendMessage({requestType: "getChain", address: myaddress, count: "100"});
 	//socket.sendMessage({requestType: "getChain", address: "xrb_1ce75trhhmqxxmpe3cny93eb3niacxwpx85nsxricrzg6zzbaz4j9zoss59n", count: "50"});
     socket.on('message', function(r) {
 		if (r.type == "Chain") {
-			console.log("chegou chain");
 			var blocks = r.blocks;
-			console.log(blocks);
 			index = Object.keys(blocks);
 			index.reverse();
 			
@@ -236,7 +239,7 @@ function checkChains() {
 					blk.setAmount(blocks[val].amount);
 					blk.setImmutable(true);
 					wallet.importBlock(blk, myaddress, false);
-					console.log("Hash "+val+" loaded")
+					wallet.removeReadyBlock(val);
 				}catch(e){
 					console.log(e);
 				}
@@ -248,6 +251,7 @@ function checkChains() {
 		}
 	});
 }
+
 
 // Dev stupid things, for testing.		
 $("#submit").submit(function(e) {
