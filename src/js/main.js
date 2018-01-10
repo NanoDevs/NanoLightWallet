@@ -221,25 +221,34 @@ function checkChains(cb) {
     socket.on('message', function(r) {
 		if (r.type == "Chain") {
 			var blocks = r.blocks;
-			index = Object.keys(blocks);
-			index.reverse();
 			
-			index.forEach(function(val, key){
-				try{
-					var blk = new Block();
-					blk.buildFromJSON(blocks[val].contents);
-					blk.setAccount(myaddress);
-					blk.setAmount(blocks[val].amount);
-					blk.setImmutable(true);
-					wallet.importBlock(blk, myaddress, false);
-				}catch(e){
-					console.log(e);
-				}
+			if(blocks) {
+				index = Object.keys(blocks);
+				index.reverse();
+				
+				index.forEach(function(val, key){
+					try{
+						var blk = new Block();
+						blk.buildFromJSON(blocks[val].contents);
+						blk.setAccount(myaddress);
+						blk.setAmount(blocks[val].amount);
+						blk.setImmutable(true);
+						wallet.importBlock(blk, myaddress, false);
+					}catch(e){
+						console.log(e);
+					}
 
-			});
-			setTimeout(checkReadyBlocks, 1000);
-			wallet.useAccount(myaddress);
-			cb();
+				});
+				setTimeout(checkReadyBlocks, 1000);
+				wallet.useAccount(myaddress);
+				cb();
+				
+			} else {
+				setTimeout(checkReadyBlocks, 1000);
+				cb();
+			}
+			
+
 		}
 	});
 }
