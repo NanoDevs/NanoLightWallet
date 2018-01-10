@@ -2,6 +2,12 @@
 <p id="bltx"></p>
 <p id="blvl"></p>
 <p id="blvf"></p>
+<table id="thetable">
+  <tbody>
+  <tr>
+  </tr>
+
+</tbody></table>
 <style>
 #address {
     margin-top: 15vh;
@@ -28,8 +34,30 @@
     color: rgba(170, 221, 221, 0.69);
 	font-family: 'Montserrat';
 }
+table {
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+	margin-top: 10vh;
+	
+}
+tbody {
+    height: 45vh;
+    display: block;
+    overflow-y: auto;
+    margin-left: auto;
+    margin-right: auto;
+}
+td, th {
+    text-align: center;
+    padding: 15px;
+    border-bottom: 1px solid #dddddd;
+    border-top: 1px solid #dddddd;
+	width: 20vw;
+}
 </style>
 <script>
+
 function getPrice() {
 	https.get('https://api.coinmarketcap.com/v1/ticker/raiblocks/', (res) => {
 		let body = "";
@@ -54,20 +82,39 @@ walletLoaded(function () {
 		socket.sendMessage({requestType: "getBalance", address: accs[i].account});
 
 	}
+	
+	
 	socket.on('message', function(r) {
 		if (r.type == "Balance") {
-			wallet.setAccountBalancePublic(r.balance, accs[0].account);
+/*			wallet.setAccountBalancePublic(r.balance, accs[0].account);
 			balance = new BigNumber(r.balance);
 			balance = balance.dividedBy('1e+30');
 			$("#blvl").html(balance.toFixed(6)+" XRB");
-			updateBalFiat();
+			var blks = wallet.getLastNBlocks(parseXRBAccount(accs[0].account), 20, 0);
+			
+			$('#thetable tr').not(':first').not(':last').remove();
+			var html = '';
+			
+			for(let i in blks){
+				html += '<tr><td>' + blks[i].getType() + '</td><td>' + blks[i].getAmount().over("1000000000000000000000000").toJSNumber() / 1000000 + ' XRB</td></tr>' ;
+			}
+			$('#thetable tr').first().after(html);
+			updateBalFiat(); */
 		} 
-		if (r.type == "balanceUpdate") {
+		if (r.type == "balanceUpdate" || r.type == "Balance") {
 			console.log("updating balance");
 			wallet.setAccountBalancePublic(r.balance, accs[0].account);
 			balance = new BigNumber(r.balance);
 			balance = balance.dividedBy('1e+30');
 			$("#blvl").html(balance.toFixed(6)+" XRB");
+			var blks = wallet.getLastNBlocks(parseXRBAccount(accs[0].account), 20, 0);
+			
+			var html = '';
+			
+			for(let i in blks){
+				html += '<tr><td>' + blks[i].getType() + '</td><td>' + blks[i].getAmount().over("1000000000000000000000000").toJSNumber() / 1000000 + ' XRB</td></tr>' ;
+			}
+			$('#thetable tr').html(html);
 			updateBalFiat();
 		} 
 	});

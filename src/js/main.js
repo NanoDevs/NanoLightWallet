@@ -157,7 +157,6 @@ function walletLoaded(cb) {
 // LOCAL POW
 
 function clientPoW() {
-	
 	var pool = wallet.getWorkPool();
 
 	var hash = false;
