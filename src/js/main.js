@@ -60,14 +60,17 @@ walletLoaded(function (){
 	for(let i in accounts) {
 		addresses.push(accounts[i].account);
 	}
-	// Register all addresses to get nearly instant notification about new balances ;)
-	socket.sendMessage({requestType: "registerAddresses", addresses: addresses});
 });
 
 // On RaiLightServer connection
 socket.on('connect', function() {
 	console.log("Connected to the default server!");
-
+	
+	// Sure it will run after the wallet is loaded
+	walletLoaded(function (){
+		// Register all addresses to get nearly instant notification about new balances ;)
+		socket.sendMessage({requestType: "registerAddresses", addresses: addresses});
+	});
 	// Get first Blocks Count
     socket.sendMessage({requestType: "getBlocksCount"});
 
