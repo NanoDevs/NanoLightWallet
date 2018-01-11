@@ -61,20 +61,21 @@ socket.on('error', function() {
 	setTimeout(startConnection, 1000);
 });
 
+// Sure it will run after the wallet is loaded
+walletLoaded(function (){
+	var accounts = wallet.getAccounts();
+	// Push all addresses to array
+	for(let i in accounts) {
+		addresses.push(accounts[i].account);
+	}
+	// Register all addresses to get nearly instant notification about new balances ;)
+	socket.sendMessage({requestType: "registerAddresses", addresses: addresses});
+});
+
 // On RaiLightServer connection
 socket.on('connect', function() {
 	console.log("Connected to the default server!");
-	// Sure it will run after the wallet is loaded
-	walletLoaded(function (){
-		var accounts = wallet.getAccounts();
-		// Push all addresses to array
-		for(let i in accounts) {
-			addresses.push(accounts[i].account);
-		}
-		console.log(accounts);
-		// Register all addresses to get nearly instant notification about new balances ;)
-		socket.sendMessage({requestType: "registerAddresses", addresses: addresses});
-	});
+
 	// Get first Blocks Count
     socket.sendMessage({requestType: "getBlocksCount"});
 
@@ -88,6 +89,8 @@ socket.on('connect', function() {
 		} else if (r.type == "balanceUpdate" || r.type == "Balance") {
 			// Sure it will run after the wallet is loaded
 			walletLoaded(function () {
+				// Save wallet
+				db.saveWallet(wallet.pack());
 				// Get PendingBlocks to PoW ;)
 				socket.sendMessage({requestType: "getPendingBlocks", addresses: addresses});
 				// Set balance;
@@ -116,6 +119,7 @@ socket.on('connect', function() {
 
 // Close the app on button close click
 $("#closebtn").click(function() {
+	db.saveWallet(wallet.pack());
 	var window = BrowserWindow.getFocusedWindow();
 	window.close();
 });
@@ -185,6 +189,45 @@ function broadcastBlock(blk){
 	});
 }
 
+// Load Chain
+function checkChains(cb) {
+	var check = {};
+	for (var i in accounts) {
+		if (accounts[i].lastHash === false) check.push(accounts[i].account);
+		console.log(accounts[i].account);
+	}
+	socket.sendMessage({requestType: "getChain", address: myaddress, count: "1000"});
+    socket.on('message', function(r) {
+		if (r.type == "Chain") {
+			var blocks = r.blocks;
+			
+			if(blocks) {
+				index = Object.keys(blocks);
+				index.reverse();
+				
+				index.forEach(function(val, key){
+					try{
+						var blk = new Block();
+						blk.buildFromJSON(blocks[val].contents);
+						blk.setAccount(myaddress);
+						blk.setAmount(blocks[val].amount);
+						blk.setImmutable(true);
+						wallet.importBlock(blk, myaddress, false);
+					}catch(e){
+						console.log(e);
+					}
+
+				});
+				wallet.useAccount(myaddress);
+				cb();
+				
+			} else {
+				cb();
+			}
+		}
+	});
+}
+
 // Local PoW
 function clientPoW() {
 	var pool = wallet.getWorkPool();
@@ -222,49 +265,7 @@ function clientPoW() {
 	}
 }
 
-
-function checkChains(cb) {
-	var check = {};
-	for (var i in accounts) {
-		if (accounts[i].lastHash === false) check.push(accounts[i].account);
-		console.log(accounts[i].account);
-	}
-
-	socket.sendMessage({requestType: "getChain", address: myaddress, count: "100"});
-	//socket.sendMessage({requestType: "getChain", address: "xrb_1ce75trhhmqxxmpe3cny93eb3niacxwpx85nsxricrzg6zzbaz4j9zoss59n", count: "50"});
-    socket.on('message', function(r) {
-		if (r.type == "Chain") {
-			var blocks = r.blocks;
-			
-			if(blocks) {
-				index = Object.keys(blocks);
-				index.reverse();
-				
-				index.forEach(function(val, key){
-					try{
-						var blk = new Block();
-						blk.buildFromJSON(blocks[val].contents);
-						blk.setAccount(myaddress);
-						blk.setAmount(blocks[val].amount);
-						blk.setImmutable(true);
-						wallet.importBlock(blk, myaddress, false);
-					}catch(e){
-						console.log(e);
-					}
-
-				});
-				wallet.useAccount(myaddress);
-				cb();
-				
-			} else {
-				cb();
-			}
-			
-
-		}
-	});
-}
-
+// Get coinmarketcap price every 20 seconds
 function getPrice() {
 	https.get('https://api.coinmarketcap.com/v1/ticker/raiblocks/', (res) => {
 		let body = "";
@@ -274,16 +275,8 @@ function getPrice() {
 		res.on("end", () => {
 			body = JSON.parse(body);
 			price = body[0].price_usd;
-			setTimeout(getPrice, 10000);
+			setTimeout(getPrice, 20000);
 		 });
 	});
 }
 getPrice();
-
-
-// Dev stupid things, for testing.		
-$("#submit").submit(function(e) {
-	e.preventDefault();
-	var test = $("#test").val();
-	socket.sendMessage({msg: test});
-});

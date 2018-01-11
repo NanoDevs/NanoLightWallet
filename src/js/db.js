@@ -9,6 +9,15 @@ var createWallet = exports.createWallet = function createWallet(seed, pack) {
 	});
 };
 
+var saveWallet = exports.saveWallet = function saveWallet(pack) {
+	dbfile.update({ type: 'wallet' }, { $set: { pack: pack } }, {}, function (err, numReplaced) {
+		console.log(numReplaced);
+		if (err) {
+			console.log(err);
+		}
+	});
+}
+
 var getWallet = exports.getWallet = function getWallet(cb) {
 	dbfile.find({ type: 'wallet' }, function (err, docs) {
 		if(docs && docs.length){

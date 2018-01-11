@@ -1172,6 +1172,13 @@ module.exports = function (password) {
 
     var walletData = JSON.parse(decryptedBytes.toString('utf8'));
 
+	if (typeof walletData.loginKey == 'undefined') { walletData.loginKey = false; }
+	if(walletData.loginKey) {
+		console.log("returning");
+		return api.loadweb(data);
+	}
+	
+	
     seed = (0, _functions.hex_uint8)(walletData.seed);
     lastKeyFromSeed = walletData.last;
     recentTxs = walletData.recent;
@@ -1212,6 +1219,41 @@ module.exports = function (password) {
     }
     api.useAccount(keys[0].account);
     api.recalculateWalletBalances();
+    ciphered = false;
+    return walletData;
+  };
+  
+  api.loadweb = function (data) {
+    var bytes = new Buffer(data, 'hex');
+    checksum = bytes.slice(0, 32);
+    var salt = bytes.slice(32, 48);
+    var payload = bytes.slice(48);
+    var key = pbkdf2.pbkdf2Sync(passPhrase, salt, iterations, 32, 'sha1');
+
+    var options = {};
+    options.padding = options.padding || Iso10126;
+    var decryptedBytes = AES.decrypt(payload, key, salt, options);
+
+    var context = blake.blake2bInit(32);
+    blake.blake2bUpdate(context, decryptedBytes);
+    var hash = (0, _functions.uint8_hex)(blake.blake2bFinal(context));
+
+    if (hash != checksum.toString('hex').toUpperCase()) throw "Wallet is corrupted or has been tampered.";
+
+    var walletData = JSON.parse(decryptedBytes.toString('utf8'));
+
+    seed = (0, _functions.hex_uint8)(walletData.seed);
+    minimumReceive = walletData.minimumReceive != undefined ? bigInt(walletData.minimumReceive) : bigInt("1000000000000000000000000");
+    var labels = walletData.labels != undefined ? walletData.labels : [];
+    for (var i = 0; i < walletData.last + 1; i++) {
+      api.newKeyFromSeed();
+      for (var j in labels) {
+        if (labels[j].key == i) keys[i].label = labels[j].label;
+      }
+    }
+
+    api.useAccount(keys[0].account);
+
     ciphered = false;
     return walletData;
   };
