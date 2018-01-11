@@ -85,9 +85,7 @@ function finishclick() {
 				clientPoW();
 				walletloaded = true;
 			});
-			$("#content").load( "pages/index.pg" );
-			$( "#wallet1" ).removeClass('selected');
-			$( "#wallet2" ).addClass('selected');
+			PageLoad("home");
 		}, 700)
 	});
 }
