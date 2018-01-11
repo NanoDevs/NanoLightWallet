@@ -51,9 +51,7 @@ db.getWallet(function (exists, pack) {
 				console.log("Wallet loaded!");
 				walletloaded = true;
 			});
-			$("#content").load( "pages/index.pg" );
-			$("#wallet1").removeClass('selected');
-			$("#wallet2").addClass('selected');
+			PageLoad("home");
 		}catch(e){
 			alert(e);
 		}

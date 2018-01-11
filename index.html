@@ -22,15 +22,13 @@
 		</div>
 	</div>
     <div class="main">
-	<ul class="topmenu">
-		<li class="active" id="homebtn"><i class="fa fa-home" aria-hidden="true"></i> Home</li>
-		<li><i class="fa fa-bank" aria-hidden="true"></i> Receive</li>
-		<li id="sendbtn"><i class="fa fa-paper-plane" aria-hidden="true"></i> Send</li>
-		<li style="width: 5%;" id="minbtn"><i class="fa fa-minus" aria-hidden="true" style="margin-top: 4px;"></i></li><li style="width: 5%;" id="closebtn"><i class="fa fa-power-off" aria-hidden="true" style=""></i></li>
-	</ul>
-	<div id="content"> 
-
-	</div>
+		<ul class="topmenu">
+			<li id="homebtn" class="hidden"><i class="fa fa-home" aria-hidden="true"></i> Home</li>
+			<li id="receivebtn" class="hidden"><i class="fa fa-bank" aria-hidden="true"></i> Receive</li>
+			<li id="sendbtn" class="hidden"><i class="fa fa-paper-plane" aria-hidden="true"></i> Send</li>
+			<li style="width: 5%;" id="minbtn"><i class="fa fa-minus" aria-hidden="true" style="margin-top: 4px;"></i></li><li style="width: 5%;" id="closebtn"><i class="fa fa-power-off" aria-hidden="true" style=""></i></li>
+		</ul>
+		<div id="content"> </div>
 		<h2 class="bottom" id="block"></h2><h2 class="bottom" id="version">BETA 0.0.1</h2>
 	</div>
   </body>
@@ -55,12 +53,15 @@
 		overflow-x: hidden;
 		text-align: center;
 		user-select: none;
-		-webkit-user-drag: none;
+		-webkit-app-region: no-drag;
 	}
 	.top-sidebar {
 		padding-top: 20px;
 		-webkit-app-region: drag;
 		margin-bottom: 7vh;
+		margin-top: 5px;
+		margin-left: 5px;
+		margin-right: 5px;
 	}
 	.main {
 		margin-left: 180px;
@@ -134,20 +135,21 @@
 		position: absolute;
 		left: 0;
 		right: 0;
-		background-color: black;
+		background-color: rgba(53, 137, 139, 0.7);
 		user-select: none;
-		cursor: pointer;
+		-webkit-app-region: drag;
 	}
-	
 	.topmenu li {
 		display: inline-block;
 		padding: 10px;
 		position: static;
 		outline: black;
-		box-shadow: inset -2px 0px 0 #2a6e6f45;
+		box-shadow: inset 2px 0px 0px rgba(42, 110, 111, 0.45);
 		outline-width: 1px;
 		width: 100%;
 		background-color: #35898b;
+		cursor: pointer;
+		-webkit-app-region: no-drag;
 	}
 	
 	.topmenu li:hover {
@@ -161,6 +163,9 @@
 		border-bottom-width: 4px;
 		border-bottom-style:  solid;
 		border-spacing: 5px;
+	}
+	.topmenu li.hidden {
+		visibility: hidden;
 	}
 	.settings {
 		position: absolute;

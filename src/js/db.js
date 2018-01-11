@@ -11,7 +11,6 @@ var createWallet = exports.createWallet = function createWallet(seed, pack) {
 
 var saveWallet = exports.saveWallet = function saveWallet(pack) {
 	dbfile.update({ type: 'wallet' }, { $set: { pack: pack } }, {}, function (err, numReplaced) {
-		console.log(numReplaced);
 		if (err) {
 			console.log(err);
 		}

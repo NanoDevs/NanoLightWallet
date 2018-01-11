@@ -34,19 +34,11 @@ var currentPage;
 
 // WALLET LOAD
 db.getWallet(function(exists, pack) {
-	BrowserWindow.getAllWindows()[0].show();
 	if (exists) {
-		$("#content").load("pages/login.pg");
-		$( "#wallet2" ).addClass('visible');
-		$( "#wallet2" ).addClass('selected');
+		PageLoad("login");
+		BrowserWindow.getAllWindows()[0].show();
 	} else {
-		$(document).ready(function() {
-			//$("#wallet1").addClass('selected');
-			//$("#wallet2").removeClass('selected');
-			$("#content").load("pages/create.pg");
-			$( "#wallet1" ).addClass('visible');
-			$( "#wallet1" ).addClass('selected');
-		});
+		PageLoad();
 	}
 });
 
@@ -119,7 +111,9 @@ socket.on('connect', function() {
 
 // Close the app on button close click
 $("#closebtn").click(function() {
-	db.saveWallet(wallet.pack());
+	if (walletloaded) {
+		db.saveWallet(wallet.pack());
+	}
 	var window = BrowserWindow.getFocusedWindow();
 	window.close();
 });
@@ -130,17 +124,63 @@ $("#minbtn").click(function() {
 	window.minimize();
 });
 
-$("#sendbtn").click(function() {
-	if (walletloaded) {
-		$("#content").empty();
-		$("#content").load("pages/send.pg");
+function PageLoad(page) {
+	$("#homebtn").removeClass('active hidden');
+	$("#receivebtn").removeClass('active hidden');
+	$("#sendbtn").removeClass('active hidden');
+	$("#content").empty();
+	switch (page) {
+		case "receive":
+			currentPage = "receive";
+			$("#receivebtn").addClass('active');
+			break; 
+		case "send":
+			currentPage = "send";
+			$("#sendbtn").addClass('active');
+			$("#content").load("pages/send.pg");
+			break; 
+		case "home":
+			currentPage = "home";
+			$("#homebtn").addClass('active');
+			$("#content").load("pages/home.pg");
+			break; 
+		case "login":
+			currentPage = "login";
+			$("#homebtn").addClass('hidden');
+			$("#receivebtn").addClass('hidden');
+			$("#sendbtn").addClass('hidden');
+			$("#content").load("pages/login.pg");
+			break; 
+		default: 
+			currentPage = "create";
+			$("#homebtn").addClass('hidden');
+			$("#receivebtn").addClass('hidden');
+			$("#sendbtn").addClass('hidden');
+			$("#content").load("pages/create.pg");
 	}
-});
+}
 
 $("#homebtn").click(function() {
 	if (walletloaded) {
-		$("#content").empty();
-		$("#content").load("pages/index.pg");
+		if (currentPage != "home") {
+			PageLoad("home");
+		}
+	}
+});
+
+$("#receivebtn").click(function() {
+	if (walletloaded) {
+		if (currentPage != "receive") {
+			PageLoad("receive");
+		}
+	}
+});
+
+$("#sendbtn").click(function() {
+	if (walletloaded) {
+		if (currentPage != "send") {
+			PageLoad("send");
+		}
 	}
 });
 
