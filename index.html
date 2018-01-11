@@ -9,14 +9,10 @@
 			<img id="logo" src="src/img/logo.png">
 			<h1 id="title">RAIBLOCKS</h1>
         </div>
-		<div class="wallets">
-			<div id="wallet1" class="wallet first" >
-				<a>CREATE NEW WALLET</a>
+			<div id="wallet" class="wallet">
+				<a>WALLET</a><br>
+				<a id="sbal"></a>
 			</div>
-			<div id="wallet2" class="wallet" >
-				<a>WALLET</a>
-			</div>
-		</div>
 		<div class="settings">
 			<a><i class="fa fa-cog" aria-hidden="true"></i> Settings</a>
 		</div>
@@ -83,7 +79,7 @@
 	.wallet {
 		border-color: rgba(128, 128, 128, 0.08);
 		font-size: 10px;
-		height: 30px;
+		height: 45px;
 		padding-top: 15px;
 		border-width: 2px;
 		background-color: rgba(128, 128, 128, 0.01);
@@ -95,7 +91,7 @@
 		color: #36927e;
 		font-weight:  bold;
 		user-select: none;
-		visibility: hidden;
+		text-align: left;
 	}
 	.wallet.first {
 		border-bottom-style: none;
@@ -105,8 +101,16 @@
 		border-right-width: 4px;
 		border-right-style: solid;
 	}
-	.wallet.visible {
-		visibility: visible;
+	.wallet.hidden {
+		visibility: hidden;
+	}
+	.wallet a {
+		margin-left: 15%;
+	}
+	#sbal {
+		font-size: 13px;
+		font-family: 'Montserrat';
+		margin-left: 15%;
 	}
 	.bottom {
 		position: absolute;
@@ -185,5 +189,14 @@
   <script src="src/js/rai-wallet/functions.js"></script>
   <script src="src/js/pow/startThreads.js"></script>
   <script src="src/js/main.js"></script>
-  
+  <script>
+	function updateS(){
+		setTimeout(updateS, 1000);
+		console.log(balance);
+		if (typeof balance != 'undefined') {
+			$("#sbal").html(balance.toFixed(6)+" XRB");
+		}
+	}
+	updateS();
+  </script>
 </html>
