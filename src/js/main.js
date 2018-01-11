@@ -133,6 +133,7 @@ function PageLoad(page) {
 		case "receive":
 			currentPage = "receive";
 			$("#receivebtn").addClass('active');
+			$("#content").load("pages/receive.pg");
 			break; 
 		case "send":
 			currentPage = "send";

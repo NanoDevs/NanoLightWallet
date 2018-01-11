@@ -1,0 +1,60 @@
+<div id="content"><p id="receivename">RECEIVE</p>
+
+<div id="divsend"><input id="address"><button id="copy"><i id="symbol" class="fa fa-clone" aria-hidden="true" style="margin-right:5px;margin-left:5px;"></i></button></div>
+<style>
+#receivename {
+    margin-top: 15vh;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.9);
+	letter-spacing: 1px;
+}
+
+input {
+    padding: 10px;
+    background-color: #35898b;
+    width: 80%;
+    border-color: #35898b;
+    border-style: solid;
+    color: white;
+    text-align: left;
+	flex-grow: 2;
+}
+#divsend {
+    display: flex;
+    margin-top: 2%;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+#copy {
+    background-color: #35898b;
+    border: 0;
+    color: white;xrb_1ifuhz19uya9gmyuzpcqr8kc944i6a45f46iajgg6gu8e3o7bm4mm6hi4anm
+}
+
+form {
+    text-align: center;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+textarea:focus, input:focus, button:focus{
+    outline: none;
+}
+</style>
+<script>
+walletLoaded(function (){
+	$("#address").val(addresses[0]);
+	
+    $("#copy").click(function(){
+		const {clipboard} = require('electron');
+		$("#symbol").removeClass('fa-clone');
+		$("#symbol").addClass('fa-check');
+		setTimeout(function() {
+			$("#symbol").removeClass('fa-check');
+			$("#symbol").addClass('fa-clone');
+		}, 1500);
+		clipboard.writeText(addresses[0]);
+    });
+});
+</script></div>
