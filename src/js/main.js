@@ -49,8 +49,9 @@ function startConnection() {
 startConnection();
 
 // If can't connect, try again (and again.. again..)
-socket.on('error', function() {
-	setTimeout(startConnection, 1000);
+socket.on('error', function(err) {
+	console.log("Error when try connect to the server: "+err.message);
+	setTimeout(startConnection, 5000);
 });
 
 // Sure it will run after the wallet is loaded
@@ -60,7 +61,12 @@ walletLoaded(function (){
 	for(let i in accounts) {
 		addresses.push(accounts[i].account);
 	}
+	registerAddresses();
 });
+
+function registerAddresses() {
+	socket.sendMessage({requestType: "registerAddresses", addresses: addresses});
+}
 
 // On RaiLightServer connection
 socket.on('connect', function() {
@@ -68,8 +74,7 @@ socket.on('connect', function() {
 	
 	// Sure it will run after the wallet is loaded
 	walletLoaded(function (){
-		// Register all addresses to get nearly instant notification about new balances ;)
-		socket.sendMessage({requestType: "registerAddresses", addresses: addresses});
+		registerAddresses();
 	});
 	// Get first Blocks Count
     socket.sendMessage({requestType: "getBlocksCount"});

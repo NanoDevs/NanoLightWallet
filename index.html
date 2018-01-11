@@ -25,7 +25,7 @@
 			<li style="width: 5%;" id="minbtn"><i class="fa fa-minus" aria-hidden="true" style="margin-top: 4px;"></i></li><li style="width: 5%;" id="closebtn"><i class="fa fa-power-off" aria-hidden="true" style=""></i></li>
 		</ul>
 		<div id="content"> </div>
-		<h2 class="bottom" id="block"></h2><h2 class="bottom" id="version">BETA 0.2.0</h2>
+		<h2 class="bottom" id="block"></h2><h2 class="bottom" id="version">BETA 0.2.1</h2>
 	</div>
   </body>
 
@@ -191,8 +191,7 @@
   <script src="src/js/main.js"></script>
   <script>
 	function updateS(){
-		setTimeout(updateS, 1000);
-		console.log(balance);
+		setTimeout(updateS, 500);
 		if (typeof balance != 'undefined') {
 			$("#sbal").html(balance.toFixed(6)+" XRB");
 		}
