@@ -1,0 +1,121 @@
+<p id="sendname">SEND</p>
+<p id="warning">Sending to a wrong address will result in the loss of your funds, please ensure to check you have the correct address.</p>
+
+<form id="sendvalue"><div id="amountd"><input id="amount" placeholder="Enter amount"></div><div id="lastd"><input id="to" placeholder="Enter destination address"><button id="subm" type="submit"><i class="fa fa-paper-plane" aria-hidden="true" style="margin-right: 5px;margin-left: 5px;"></i></button></div></form>
+<style>
+#sendname {
+    margin-top: 15vh;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.9);
+	letter-spacing: 1px;
+}
+
+#warning {
+    text-align: center;
+    font-size: 14px;
+    margin-right: 10%;
+    margin-left: 10%;
+    user-select: none;
+    cursor: default;
+    font-family: 'Montserrat';
+}
+
+input {
+    padding: 10px;
+    background-color: #35898b;
+    width: 80%;
+    border-color: #35898b;
+    border-style: solid;
+    color: white;
+    text-align: left;
+	flex-grow: 2;
+}
+#lastd {
+    display: flex;
+    margin-top: 2%;
+}
+#subm {
+    background-color: #35898b;
+    border: 0;
+    color: white;
+}
+
+form {
+    text-align: center;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+#amountd {
+    display: flex;
+}
+
+::placeholder {
+   color: rgba(255, 255, 255, 0.65);
+   text-align: left;
+}
+</style>
+<script>
+
+$('#amount').keyup(function(){
+var regex = /[^\d.]|\.(?=.*\.)/g;
+var subst=``;
+var str=this.value;
+var result = str.replace(regex, subst);
+this.value=result;
+});
+
+$('#sendvalue').submit(function(e) {
+	e.preventDefault();
+	var error = false;
+	var from = parseXRBAccount(addresses[0]);
+	if(from === false)
+		return alert('Invalid origin address');
+	var to = $('#to').val();
+	try{
+		keyFromAccount(to);
+	}catch(e){
+		alert('Invalid XRB address.');
+		$('#to').css('border-color', '#880000');
+		error = true;
+	}
+	var balanceRaw = wallet.getAccountBalance(from);
+	
+	var amount = parseFloat($('#amount').val());
+	var amountRai = parseInt(amount * 1000000);
+	var amountRaw = bigInt(amountRai).multiply("1000000000000000000000000");
+	if(amount <= 0) {
+		alert('Invalid amount.');
+		$('#amount').css('border-color', '#880000');
+		error = true;
+	}
+	if(amountRaw.greater(balanceRaw)) {
+		alert('Amount is greater than balance in the selected account.');
+		$('#amount').css('border-color', '#880000');
+			error = true;
+		}
+	if(!error) {
+		try{
+			var blk = wallet.addPendingSendBlock(from, to, amountRaw);
+			var hash = blk.getHash(true);
+
+			alert("Sent!");
+			wallet.workPoolAdd(blk.getPrevious(), from, true);
+			try{
+				balance = new BigNumber(wallet.getAccountBalance(from)).dividedBy('1e+30');
+			}catch(e){console.log(e);}
+			socket.sendMessage({requestType: "getBalance", address: from});
+		}catch(e){
+			alert('Ooops, something happened: ' + e.message);
+		}
+				
+	}
+	return false;
+	
+	
+	
+
+});
+
+</script>

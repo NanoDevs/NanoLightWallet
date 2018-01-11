@@ -25,7 +25,7 @@
 	<ul class="topmenu">
 		<li class="active" id="homebtn"><i class="fa fa-home" aria-hidden="true"></i> Home</li>
 		<li><i class="fa fa-bank" aria-hidden="true"></i> Receive</li>
-		<li><i class="fa fa-paper-plane" aria-hidden="true"></i> Send</li>
+		<li id="sendbtn"><i class="fa fa-paper-plane" aria-hidden="true"></i> Send</li>
 		<li style="width: 5%;" id="minbtn"><i class="fa fa-minus" aria-hidden="true" style="margin-top: 4px;"></i></li><li style="width: 5%;" id="closebtn"><i class="fa fa-power-off" aria-hidden="true" style=""></i></li>
 	</ul>
 	<div id="content"> 
@@ -94,6 +94,7 @@
 		color: #36927e;
 		font-weight:  bold;
 		user-select: none;
+		visibility: hidden;
 	}
 	.wallet.first {
 		border-bottom-style: none;
@@ -102,6 +103,9 @@
 		border-right-color: #def58c;
 		border-right-width: 4px;
 		border-right-style: solid;
+	}
+	.wallet.visible {
+		visibility: visible;
 	}
 	.bottom {
 		position: absolute;

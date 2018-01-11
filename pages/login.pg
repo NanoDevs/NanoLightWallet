@@ -47,8 +47,8 @@ db.getWallet(function (exists, pack) {
 			accs = wallet.getAccounts();
 			myaddress = accs[0].account;
 			checkChains(function (){
-				console.log("wallet loaded");
 				clientPoW();
+				console.log("Wallet loaded!");
 				walletloaded = true;
 			});
 			$("#content").load( "pages/index.pg" );

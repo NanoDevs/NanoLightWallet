@@ -1,4 +1,4 @@
-// Set variables and load modules
+// Load modules
 var path = require('path');
 var db = require('./src/js/db.js');
 var cryptom = require('crypto');
@@ -9,114 +9,105 @@ var nacl = require('./src/js/lib/nacl.js');
 var BigNumber = require('bignumber.js');
 var bigInt = require("big-integer");
 var https = require('https');
-var accs;
-var balance;
-var price;
-var wallet;
-var walletloaded = false;
-var myaddress;
-var blks;
+var RaiWallet = require('./src/js/rai-wallet/Wallet');
+var Block = require('./src/js/rai-wallet/Block');
 
 // Get BrowserWindow.
 const {remote} = require('electron');
 const {BrowserWindow} = remote;
-
-var RaiWallet  = require('./src/js/rai-wallet/Wallet');
-var Block = require('./src/js/rai-wallet/Block');
 
 // Configure RaiLightServer:
 
 var port = 7077;
 var host = '127.0.0.1';
 
+// Load default (and global) variables:
+var wallet;
+var accounts;
+var addresses = [];
+var balance;
+var price;
+var walletloaded = false;
+var myaddress;
+var txhistory;
+var currentPage;
+
 // WALLET LOAD
-BrowserWindow.getAllWindows()[0].show();
-db.getWallet(function (exists, pack) {
+db.getWallet(function(exists, pack) {
+	BrowserWindow.getAllWindows()[0].show();
 	if (exists) {
-		$("#content").load( "pages/login.pg" );
-		$( "#wallet1" ).removeClass('selected');
+		$("#content").load("pages/login.pg");
+		$( "#wallet2" ).addClass('visible');
 		$( "#wallet2" ).addClass('selected');
 	} else {
 		$(document).ready(function() {
-			$("#wallet1").addClass('selected');
-			$("#wallet2").removeClass('selected');
+			//$("#wallet1").addClass('selected');
+			//$("#wallet2").removeClass('selected');
 			$("#content").load("pages/create.pg");
+			$( "#wallet1" ).addClass('visible');
+			$( "#wallet1" ).addClass('selected');
 		});
 	}
 });
 
 // Connect to RaiLightServer (yes, will be decentralized, later)
-function start() {
+function startConnection() {
 	socket.connect(port, host);
 }
-start();
+startConnection();
 
 // If can't connect, try again (and again.. again..)
 socket.on('error', function() {
-	setTimeout(start, 1000);
+	setTimeout(startConnection, 1000);
 });
 
-// On RaiLightServer sucess connection:
+// On RaiLightServer connection
 socket.on('connect', function() {
+	console.log("Connected to the default server!");
+	// Sure it will run after the wallet is loaded
 	walletLoaded(function (){
-		var accs = wallet.getAccounts();
-		for(let i in accs) {
-			var acc = accs[i].account;
-			//var bal = accs[i].balance;
-			$("#address").html(accs[i].account);
-			socket.sendMessage({requestType: "getBalance", address: accs[i].account});
+		var accounts = wallet.getAccounts();
+		// Push all addresses to array
+		for(let i in accounts) {
+			addresses.push(accounts[i].account);
 		}
-		socket.on('message', function(r) {
-			if (r.type == "balanceUpdate" || r.type == "Balance") {
-				
-			}
-		});
-
-		console.log("connected registered");
-		socket.sendMessage({requestType: "registerAddresses", addresses: [myaddress]});
+		console.log(accounts);
+		// Register all addresses to get nearly instant notification about new balances ;)
+		socket.sendMessage({requestType: "registerAddresses", addresses: addresses});
 	});
-	// Get first BlockCount ;)
+	// Get first Blocks Count
     socket.sendMessage({requestType: "getBlocksCount"});
-//	socket.sendMessage({requestType: "getBalance", address: "xrb_39ymww61tksoddjh1e43mprw5r8uu1318it9z3agm7e6f96kg4ndqg9tuds4"});
-//	socket.sendMessage({requestType: "getInfo", address: "xrb_39ymww61tksoddjh1e43mprw5r8uu1318it9z3agm7e6f96kg4ndqg9tuds4"});
-//  socket.sendMessage({requestType: "getPendingBlocks", addresses: ["xrb_1ce75trhhmqxxmpe3cny93eb3niacxwpx85nsxricrzg6zzbaz4j9zoss59n"]});
 
 	// Handle RaiLightServer responses
     socket.on('message', function(r) {
-	// If BlocksCount
+		// If BlocksCount
 		if (r.type == "BlocksCount") {
-			// Update on frontend
+			// Update on GUI
 			$("#block").html("Block: "+r.count);
+		// If BalanceUpdate or Balance (deprecated)
+		} else if (r.type == "balanceUpdate" || r.type == "Balance") {
+			// Sure it will run after the wallet is loaded
+			walletLoaded(function () {
+				// Get PendingBlocks to PoW ;)
+				socket.sendMessage({requestType: "getPendingBlocks", addresses: addresses});
+				// Set balance;
+				balance = new BigNumber(r.balance).dividedBy('1e+30');
+				wallet.setAccountBalancePublic(r.balance, addresses[0]);
+				// Set transaction history
+				txhistory = wallet.getLastNBlocks(parseXRBAccount(addresses[0]), 100, 0);
+			});
+
 		} else if (r.type == "PendingBlocks") {
 			// Add pending blocks to PoW
 			Object.keys(r.blocks).forEach(function(account){
 				Object.keys(r.blocks[account]).forEach(function(hash){
-					console.log( hash );
-					console.log( account );
-					console.log( r.blocks[account][hash].source);
-					console.log( r.blocks[account][hash].amount);
 					try {
 						wallet.addPendingReceiveBlock(hash, account, r.blocks[account][hash].source, r.blocks[account][hash].amount);
-					}
-					catch(err) {
-						console.log(err);
-					}
+					// Catch error, for debug
+					} catch(e) {console.log(err);}
 				});
 			});
-			//socket.sendMessage({requestType: "getPendingBlocks", addresses: ["xrb_1ce75trhhmqxxmpe3cny93eb3niacxwpx85nsxricrzg6zzbaz4j9zoss59n"]});
-		} else if (r.type == "balanceUpdate" || r.type == "Balance") {
-			walletLoaded(function () {
-				console.log(r);
-				balance = new BigNumber(r.balance);
-				balance = balance.dividedBy('1e+30');
-				blks = wallet.getLastNBlocks(parseXRBAccount(accs[0].account), 20, 0);
-				wallet.setAccountBalancePublic(r.balance, accs[0].account);
-				socket.sendMessage({requestType: "getPendingBlocks", addresses: [r.address]});
-			});
-
-		} else {
-			// Debug, for now.
-			console.log(r);
+			
 		}
     });
 });
@@ -135,8 +126,23 @@ $("#minbtn").click(function() {
 	window.minimize();
 });
 
+$("#sendbtn").click(function() {
+	if (walletloaded) {
+		$("#content").empty();
+		$("#content").load("pages/send.pg");
+	}
+});
+
+$("#homebtn").click(function() {
+	if (walletloaded) {
+		$("#content").empty();
+		$("#content").load("pages/index.pg");
+	}
+});
+
 // FUNCTIONS
 
+// Encrypt using aes-256-cbc
 function encrypt(text, password){
 	var cipher = cryptom.createCipher('aes-256-cbc',password);
 	var crypted = cipher.update(text,'utf8','hex');
@@ -144,6 +150,7 @@ function encrypt(text, password){
 	return crypted;
 }
 
+// Decrypt using aes-256-cbc
 function decrypt(text, password){
 	var decipher = cryptom.createDecipher('aes-256-cbc',password);
 	var dec = decipher.update(text,'hex','utf8');
@@ -151,6 +158,7 @@ function decrypt(text, password){
 	return dec;
 }
 
+// Sure it will run after the wallet is loaded
 function walletLoaded(cb) {
 	if (walletloaded) {
 		cb();
@@ -159,42 +167,7 @@ function walletLoaded(cb) {
 	}
 }
 
-// LOCAL POW
-
-function clientPoW() {
-	var pool = wallet.getWorkPool();
-
-	var hash = false;
-	if(pool.length > 0) {
-		for(let i in pool) {
-			if(pool[i].needed ||!pool[i].requested) {
-				hash = pool[i].hash;
-				break;
-			}
-		}
-		if(hash === false) {
-			return setTimeout(clientPoW, 1000);
-		}
-		pow_workers = pow_initiate(NaN, 'src/js/pow/');
-		pow_callback(pow_workers, hash, function() {
-			console.log('Working locally on ' + hash);
-		}, function(work) {
-			console.log('PoW found for ' + hash + ": " + work);
-			wallet.updateWorkPool(hash, work);
-			setTimeout(clientPoW, 1000);
-		});
-	} else {
-		setTimeout(clientPoW, 1000);
-	}
-}
-
-function checkReadyBlocks(){
-	var blk = wallet.getNextReadyBlock();
-	if(blk !== false)
-		broadcastBlock(blk);
-	setTimeout(checkReadyBlocks, 1500);
-}
-
+// Broadcast blocks to the network
 function broadcastBlock(blk){
 	var json = blk.getJSONBlock();
 	var hash = blk.getHash(true);
@@ -204,7 +177,6 @@ function broadcastBlock(blk){
 		guiHash = blk.getSource();
 	else
 		guiHash = blk.getHash(true);
-	
     socket.sendMessage({requestType: "processBlock", block: json});
     socket.on('message', function(r) {
 		if (r.type == "processResponse") {
@@ -213,10 +185,49 @@ function broadcastBlock(blk){
 	});
 }
 
+// Local PoW
+function clientPoW() {
+	var pool = wallet.getWorkPool();
+	var hash = false;
+	if(pool.length > 0) {
+		for(let i in pool) {
+			if(pool[i].needed ||!pool[i].requested) {
+				hash = pool[i].hash;
+				break;
+			}
+		}
+		if(hash === false) {
+			return setTimeout(clientPoW, 200);
+		}
+		pow_workers = pow_initiate(NaN, 'src/js/pow/');
+		pow_callback(pow_workers, hash, function() {
+			console.log('Working locally on ' + hash);
+		}, function(work) {
+			console.log('PoW found for ' + hash + ": " + work);
+			wallet.updateWorkPool(hash, work);
+			setTimeout(clientPoW, 200);
+			checkReadyBlocks();
+			txhistory = wallet.getLastNBlocks(parseXRBAccount(addresses[0]), 100, 0);
+			function checkReadyBlocks(){
+				var blk = wallet.getNextReadyBlock();
+				if(blk !== false) {
+					broadcastBlock(blk);
+				} else {
+					setTimeout(checkReadyBlocks, 500);
+				}
+			}
+		});
+	} else {
+		setTimeout(clientPoW, 200);
+	}
+}
+
+
 function checkChains(cb) {
-	var r = {};
-	for (var i in accs) {
-		if (accs[i].lastHash === false) r.push(accs[i].account);
+	var check = {};
+	for (var i in accounts) {
+		if (accounts[i].lastHash === false) check.push(accounts[i].account);
+		console.log(accounts[i].account);
 	}
 
 	socket.sendMessage({requestType: "getChain", address: myaddress, count: "100"});
@@ -242,12 +253,10 @@ function checkChains(cb) {
 					}
 
 				});
-				setTimeout(checkReadyBlocks, 1000);
 				wallet.useAccount(myaddress);
 				cb();
 				
 			} else {
-				setTimeout(checkReadyBlocks, 1000);
 				cb();
 			}
 			

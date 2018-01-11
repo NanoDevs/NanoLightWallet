@@ -1,4 +1,4 @@
-<p id="address"></p>
+<p id="walletname">WALLET</p>
 <p id="bltx"></p>
 <p id="blvl"></p>
 <p id="blvf"></p>
@@ -9,11 +9,12 @@
 
 </tbody></table>
 <style>
-#address {
+#walletname {
     margin-top: 15vh;
     text-align: center;
     font-size: 12px;
-    color: rgba(110, 250, 255, 0.31);
+    color: rgba(255, 255, 255, 0.9);
+	letter-spacing: 1px;
 }
 #bltx {
 	text-align: center;
@@ -54,6 +55,7 @@ td, th {
     border-bottom: 1px solid #dddddd;
     border-top: 1px solid #dddddd;
 	width: 20vw;
+	
 }
 </style>
 <script>
@@ -62,11 +64,12 @@ function update(){
 	if (typeof balance != 'undefined') {
 		$("#blvl").html(balance.toFixed(6)+" XRB");
 	}
-	if (typeof blks != 'undefined') {
-		blks = wallet.getLastNBlocks(parseXRBAccount(accs[0].account), 20, 0);
+	if (typeof txhistory != 'undefined') {
+		//console.log(addresses[0]);
+		//blks = wallet.getLastNBlocks(addresses[0], 20, 0);
 		var html = '';
-		for(let i in blks){
-			html += '<tr><td>' + blks[i].getType() + '</td><td>' + blks[i].getAmount().over("1000000000000000000000000").toJSNumber() / 1000000 + ' XRB</td></tr>' ;
+		for(let i in txhistory){
+			html += '<tr><td>' + txhistory[i].getType() + '</td><td>' + txhistory[i].getAmount().over("1000000000000000000000000").toJSNumber() / 1000000 + ' XRB</td></tr>' ;
 		}
 		$('#thetable tr').html(html);
 	}
