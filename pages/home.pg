@@ -4,16 +4,16 @@
 <p id="blvf"></p>
 <table id="thetable">
   <tbody>
-  <tr>
-  </tr>
+    <tr></tr>
+  </tbody>
+</table>
 
-</tbody></table>
 <style>
 #walletname {
-    margin-top: 15vh;
-    text-align: center;
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.9);
+  margin-top: 15vh;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
 	letter-spacing: 1px;
 }
 #bltx {
@@ -31,31 +31,40 @@
 	font-family: 'Montserrat';
 }
 #blvf {
-    text-align: center;
-    color: rgba(170, 221, 221, 0.69);
+  text-align: center;
+  color: rgba(170, 221, 221, 0.69);
 	font-family: 'Montserrat';
 }
 table {
-    border-collapse: collapse;
-    margin-left: auto;
-    margin-right: auto;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
 	margin-top: 10vh;
-	
 }
 tbody {
-    height: 45vh;
-    display: block;
-    overflow-y: auto;
-    margin-left: auto;
-    margin-right: auto;
+  height: 45vh;
+  display: block;
+  overflow-y: auto;
+  margin-left: auto;
+  margin-right: auto;
+  padding-right: 6px;
+}
+tbody::-webkit-scrollbar
+{
+	width: 6px;
+	background-color: transparent;
+}
+tbody::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	background-color: rgba(255, 255, 255, 0.3);
 }
 td, th {
-    text-align: center;
-    padding: 15px;
-    border-bottom: 1px solid #dddddd;
-    border-top: 1px solid #dddddd;
-	width: 20vw;
-	
+  text-align: center;
+  padding: 15px;
+  border-bottom: 1px solid #dddddd;
+  border-top: 1px solid #dddddd;
+  width: 20vw;
 }
 </style>
 <script>
