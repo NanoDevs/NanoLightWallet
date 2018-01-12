@@ -100,6 +100,7 @@ $('#sendvalue').submit(function(e) {
 		}
 	if(!error) {
 		try{
+			console.log("from: "+from+" to: "+to+" amount: "+amountRaw);
 			var blk = wallet.addPendingSendBlock(from, to, amountRaw);
 			var hash = blk.getHash(true);
 

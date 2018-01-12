@@ -106,6 +106,7 @@ socket.on('connect', function() {
 				Object.keys(r.blocks[account]).forEach(function(hash){
 					try {
 						wallet.addPendingReceiveBlock(hash, account, r.blocks[account][hash].source, r.blocks[account][hash].amount);
+						db.saveWallet(wallet.pack());
 					// Catch error, for debug
 					} catch(e) {console.log(err);}
 				});
@@ -300,9 +301,12 @@ function clientPoW() {
 			setTimeout(clientPoW, 200);
 			checkReadyBlocks();
 			txhistory = wallet.getLastNBlocks(parseXRBAccount(addresses[0]), 100, 0);
+			console.log("Trying to broadcast");
 			function checkReadyBlocks(){
+				console.log("checkReadyBlocks");
 				var blk = wallet.getNextReadyBlock();
 				if(blk !== false) {
+					console.log("broadcasting");
 					broadcastBlock(blk);
 				} else {
 					setTimeout(checkReadyBlocks, 500);

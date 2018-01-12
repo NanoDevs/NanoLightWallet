@@ -81,6 +81,7 @@ function finishclick() {
 			var accs = wallet.getAccounts();
 			myaddress = accs[0].account;
 			checkChains(function (){
+				db.saveWallet(wallet.pack());
 				console.log("wallet loaded");
 				clientPoW();
 				walletloaded = true;
