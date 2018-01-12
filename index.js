@@ -9,7 +9,7 @@ const url = require('url')
 let mainWindow
 
 function createWindow () {
-  mainWindow = new BrowserWindow({width: 680, height: 500, minWidth:650, minHeight:500, frame: false, show: false, webPreferences: {webSecurity: false}})
+  mainWindow = new BrowserWindow({width: 700, height: 500, minWidth:650, minHeight:500, frame: false, show: false, webPreferences: {webSecurity: false}})
   // Load default page, index.html
   mainWindow.loadURL(url.format({
     pathname: path.join(__dirname, 'index.html'),

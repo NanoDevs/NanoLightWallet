@@ -12,7 +12,8 @@
     "jquery": "^3.2.1",
     "json-socket": "^0.3.0",
     "nedb": "^1.8.0",
-    "pbkdf2": "^3.0.14"
+    "pbkdf2": "^3.0.14",
+    "qrcodejs": "^1.0.0"
   },
   "devDependencies": {
     "electron": "~1.7.8"
