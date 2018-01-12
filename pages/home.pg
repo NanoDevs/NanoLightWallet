@@ -42,6 +42,15 @@
   margin-right: auto;
   margin-top: 10vh;
   overflow-y: auto;
+  padding-right: 6px;
+}
+.transactions::-webkit-scrollbar {
+  width: 6px;
+  background-color: transparent;
+}
+.transactions::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.3);
 }
 .transaction {
   display: flex;
