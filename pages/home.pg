@@ -2,11 +2,8 @@
 <p id="bltx"></p>
 <p id="blvl"></p>
 <p id="blvf"></p>
-<table id="thetable">
-  <tbody>
-    <tr></tr>
-  </tbody>
-</table>
+<ul id="transactions" class="transactions">
+</ul>
 
 <style>
 #walletname {
@@ -35,36 +32,42 @@
   color: rgba(170, 221, 221, 0.69);
 	font-family: 'Montserrat';
 }
-table {
-  border-collapse: collapse;
-  margin-left: auto;
-  margin-right: auto;
-	margin-top: 10vh;
-}
-tbody {
-  height: 45vh;
+.transactions {
+  font-family: "Montserrat";
   display: block;
-  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+  height: 45vh;
   margin-left: auto;
   margin-right: auto;
+  margin-top: 10vh;
+  overflow-y: auto;
   padding-right: 6px;
 }
-tbody::-webkit-scrollbar
-{
-	width: 6px;
-	background-color: transparent;
+.transactions::-webkit-scrollbar {
+  width: 6px;
+  background-color: transparent;
 }
-tbody::-webkit-scrollbar-thumb
-{
-	border-radius: 10px;
-	background-color: rgba(255, 255, 255, 0.3);
+.transactions::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.3);
 }
-td, th {
-  text-align: center;
-  padding: 15px;
-  border-bottom: 1px solid #dddddd;
-  border-top: 1px solid #dddddd;
-  width: 20vw;
+.transaction {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #e2e2e2;
+  padding: 1.25rem 1rem;
+}
+.transaction:last-child {
+  border-bottom: 1px solid #e2e2e2;
+}
+.transaction-type {
+  text-transform: uppercase;
+  color: #fff;
+}
+.transaction-amount {
+  text-align: right;
+  color: #fff;
 }
 </style>
 <script>
@@ -78,9 +81,15 @@ function update(){
 		//blks = wallet.getLastNBlocks(addresses[0], 20, 0);
 		var html = '';
 		for(let i in txhistory){
-			html += '<tr><td>' + txhistory[i].getType() + '</td><td>' + txhistory[i].getAmount().over("1000000000000000000000000").toJSNumber() / 1000000 + ' XRB</td></tr>' ;
+			html += '<li class="transaction">' +
+                        '<div class="transaction-type">' +
+                            txhistory[i].getType() +
+                        '</div>' +
+                        '<div class="transaction-amount">' +
+                            txhistory[i].getAmount().over("1000000000000000000000000").toJSNumber() / 1000000 +
+                    ' XRB</div></li>';
 		}
-		$('#thetable tr').html(html);
+		$('#transactions').html(html);
 	}
 	if (typeof price != 'undefined' && typeof balance != 'undefined') {
 		$("#blvf").html("$ "+balance.times(price).toFixed(2)+" USD");
