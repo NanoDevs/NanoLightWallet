@@ -1,81 +1,163 @@
-<p id="walletname">WALLET</p>
+<p id="walletname">BALANCE</p>
 <p id="bltx"></p>
 <p id="blvl"></p>
 <p id="blvf"></p>
 <table id="thetable">
-  <tbody>
-  <tr>
-  </tr>
+  <tbody></tbody>
+</table>
 
-</tbody></table>
 <style>
-#walletname {
+  #walletname {
     margin-top: 15vh;
     text-align: center;
     font-size: 12px;
     color: rgba(255, 255, 255, 0.9);
-	letter-spacing: 1px;
-}
-#bltx {
-	text-align: center;
-	font-size: 15px;
-	letter-spacing: 1.5px;
-	user-select: none;
-	cursor: default;
-}
-#blvl {
-	text-align: center;
-	color: #def58c;
-	margin: 0;
-	font-size: 40px;
-	font-family: 'Montserrat';
-}
-#blvf {
+    letter-spacing: 1.2px;
+  }
+  #bltx {
+    text-align: center;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    user-select: none;
+    cursor: default;
+  }
+  #blvl {
+    text-align: center;
+    color: #def58c;
+    margin: 0;
+    font-size: 40px;
+    font-family: 'Montserrat';
+    letter-spacing: 1.2px;
+  }
+  #blvf {
     text-align: center;
     color: rgba(170, 221, 221, 0.69);
-	font-family: 'Montserrat';
-}
-table {
+    font-family: 'Montserrat';
+    letter-spacing: 1.2px;
+  }
+  table {
     border-collapse: collapse;
     margin-left: auto;
     margin-right: auto;
-	margin-top: 10vh;
-	
-}
-tbody {
+    margin-top: 10vh;
+  }
+  table::-webkit-scrollbar {
+    display: none;
+  }
+  tbody {
     height: 45vh;
     display: block;
     overflow-y: auto;
     margin-left: auto;
     margin-right: auto;
-}
-td, th {
-    text-align: center;
-    padding: 15px;
-    border-bottom: 1px solid #dddddd;
-    border-top: 1px solid #dddddd;
-	width: 20vw;
-	
-}
+  }
+  tbody::-webkit-scrollbar {
+    display: none;
+  }
+  td,
+  th {
+    padding: 15px 10px;
+    border-bottom: 1px solid #52a7af;
+    border-top: 1px solid #52a7af;
+    width: 21vw;
+    text-transform: uppercase;
+  }
+  td {
+    font-size: 11px;
+    text-align: right;
+    letter-spacing: 1.3px;
+    font-weight: lighter;
+  }
+  td.left {
+    text-align: left;
+  }
+  tr.received {
+    color: #def58c;
+  }
+
 </style>
+
 <script>
-function update(){
-	setTimeout(update, 100);
-	if (typeof balance != 'undefined') {
-		$("#blvl").html(balance.toFixed(6)+" XRB");
-	}
-	if (typeof txhistory != 'undefined') {
-		//console.log(addresses[0]);
-		//blks = wallet.getLastNBlocks(addresses[0], 20, 0);
-		var html = '';
-		for(let i in txhistory){
-			html += '<tr><td>' + txhistory[i].getType() + '</td><td>' + txhistory[i].getAmount().over("1000000000000000000000000").toJSNumber() / 1000000 + ' XRB</td></tr>' ;
-		}
-		$('#thetable tr').html(html);
-	}
-	if (typeof price != 'undefined' && typeof balance != 'undefined') {
-		$("#blvf").html("$ "+balance.times(price).toFixed(2)+" USD");
-	}
-}
-update();
+  function update() {
+    if (typeof balance != 'undefined') {
+      $("#blvl").html(balance.toFixed(6) + " XRB");
+    } else {
+      $("#blvl").html("0.00 XRB");
+    }
+    if (typeof txhistory != 'undefined') {
+      //console.log(addresses[0]); blks = wallet.getLastNBlocks(addresses[0], 20, 0);
+      var html = '';
+      for (let i in txhistory) {
+        html += '<tr><td>' + txhistory[i].getType() + '</td><td>' + txhistory[i].getAmount().over("1000000000000000000000000").toJSNumber() / 1000000 + ' XRB</td></tr>';
+      }
+      $('#thetable tr').html(html);
+    }
+    if (typeof price != 'undefined' && typeof balance != 'undefined') {
+      $("#blvf").html("$ " + balance.times(price).toFixed(2) + " USD");
+    } else {
+      $("#blvf").html("0.00 USD");
+    }
+
+    // DEV
+
+    txhistory = [
+      {
+        transaction: 'Received',
+        ammount: '100',
+        time: Date.now()
+      }, {
+        transaction: 'Sent',
+        ammount: '100',
+        time: Date.now()
+      }, {
+        transaction: 'Received',
+        ammount: '100',
+        time: Date.now()
+      }, {
+        transaction: 'Sent',
+        ammount: '100',
+        time: Date.now()
+      }, {
+        transaction: 'Received',
+        ammount: '100',
+        time: Date.now()
+      }, {
+        transaction: 'Received',
+        ammount: '100',
+        time: Date.now()
+      }, {
+        transaction: 'Received',
+        ammount: '100',
+        time: Date.now()
+      }, {
+        transaction: 'Received',
+        ammount: '100',
+        time: Date.now()
+      }, {
+        transaction: 'Received',
+        ammount: '100',
+        time: Date.now()
+      }, {
+        transaction: 'Received',
+        ammount: '100',
+        time: Date.now()
+      }
+    ];
+
+    for (let i in txhistory) {
+      let cls = txhistory[i].transaction.toLowerCase();
+      let signal;
+      if (cls === 'received') {
+        signal = '+'
+      } else {
+        signal = '-'
+      }
+
+      html += '<tr class=' + cls + '><td class="left">' + txhistory[i].time + '</td><td>' + txhistory[i].transaction + '</td><td>' + signal + txhistory[i].ammount + ' XRB</td></tr>';
+    }
+    $('#thetable tbody').html(html);
+
+  }
+  update();
+  setTimeout(update, 100);
 </script>

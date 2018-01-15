@@ -12,10 +12,13 @@
     "jquery": "^3.2.1",
     "json-socket": "^0.3.0",
     "nedb": "^1.8.0",
+    "node-gyp": "^3.6.2",
     "pbkdf2": "^3.0.14",
-    "qrcodejs": "^1.0.0"
+    "qrcodejs": "^1.0.0",
+    "rebuild": "^0.1.2"
   },
   "devDependencies": {
-    "electron": "~1.7.8"
+    "electron": "~1.7.8",
+    "electron-prebuilt": "^1.4.13"
   }
 }

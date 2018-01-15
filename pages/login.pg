@@ -8,52 +8,54 @@
 	<br>
 	<button id="button">Let me in!</button>
 </div>
+
 <style>
-#n {
-	text-align: center;
-}
-button {
-	margin-top: 10px;
-	background-color: #1ba79f;
-	border: none;
-	color: white;
-	padding: 10px 15px;
-	text-align: center;
-	text-decoration: none;
-	display: inline-block;
-	cursor: pointer;
-	font-size: 16px;
-	user-select: none;
-}
-button:hover {
-	background-color: #1fc0c3;
-}
-button:focus {
-	outline: 0;
-}
-#mypassword {
-    margin-top: 15px;
-}
+	#n {
+		text-align: center;
+	}
+	button {
+		margin-top: 10px;
+		background-color: #1ba79f;
+		border: none;
+		color: white;
+		padding: 10px 15px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		cursor: pointer;
+		font-size: 16px;
+		user-select: none;
+	}
+	button:hover {
+		background-color: #1fc0c3;
+	}
+	button:focus {
+		outline: 0;
+	}
+	#mypassword {
+		margin-top: 15px;
+	}
+
 </style>
 
 <script>
-db.getWallet(function (exists, pack) {
-	$("#button").click(function() {
-		var password = $("#mypassword").val();
-		
-		wallet = new RaiWallet(password);
-		try{
-			wallet.load(pack);
-			accs = wallet.getAccounts();
-			myaddress = accs[0].account;
-			clientPoW();
-			console.log("Wallet loaded!");
-			walletloaded = true;
-			PageLoad("home");
-		}catch(e){
-			alert(e);
-		}
-		
+	db.getWallet(function (exists, pack) {
+		setTimeout(() => {
+			var password = $("#mypassword").val();
+
+			wallet = new RaiWallet('1234');
+			try {
+				wallet.load(pack);
+				accs = wallet.getAccounts();
+				myaddress = accs[0].account;
+				clientPoW();
+				console.log("Wallet loaded!");
+				walletloaded = true;
+				PageLoad("home");
+			} catch (e) {
+				alert(e);
+			}
+		}, 1000);
+
 	});
-});
 </script>
