@@ -5,6 +5,7 @@ var cryptom = require('crypto');
 var net = require('net');
 var JsonSocket = require('json-socket');
 var socket = new JsonSocket(new net.Socket());
+var socket2 = new JsonSocket(new net.Socket());
 var nacl = require('./src/js/lib/nacl.js');
 var BigNumber = require('bignumber.js');
 var bigInt = require("big-integer");
@@ -16,21 +17,39 @@ var Block = require('./src/js/rai-wallet/Block');
 const {remote} = require('electron');
 const {BrowserWindow} = remote;
 
-// Configure RaiLightServer:
+// Configure RaiLightServer
 
 var port = 7077;
 var host = '127.0.0.1';
 
 // Load default (and global) variables:
+var servers = [];
+var addresses = [];
 var wallet;
 var accounts;
-var addresses = [];
 var balance;
 var price;
 var walletloaded = false;
 var myaddress;
 var txhistory;
 var currentPage;
+
+
+function loadBootstrap() {
+	https.get('https://raw.githubusercontent.com/AugustoResende/RaiLightWallet/master/bootstrap', (res) => {
+		let body = "";
+		res.on("data", data => {
+			body += data;
+		});
+		res.on("end", () => {
+			body = body.toString().split("\n");
+			for(i in body) {
+				servers.push(body[i]);
+			}
+		 });
+	});
+}
+loadBootstrap();
 
 // WALLET LOAD
 db.getWallet(function(exists, pack) {
@@ -42,12 +61,22 @@ db.getWallet(function(exists, pack) {
 	}
 });
 
+// https://raw.githubusercontent.com/AugustoResende/RaiLightWallet/master/bootstrap
+
 // Connect to RaiLightServer (yes, will be decentralized, later)
 function startConnection() {
 	socket.connect(port, host);
 }
 startConnection();
+/*
+function startConnection2(porta) {
+	socket2.connect(porta, host);
+}
 
+socket2.on('connect', function() {
+	console.log("Connected to the second server!");
+});
+*/
 // If can't connect, try again (and again.. again..)
 socket.on('error', function(err) {
 	console.log("Error when try connect to the server: "+err.message);
@@ -70,7 +99,7 @@ function registerAddresses() {
 
 // On RaiLightServer connection
 socket.on('connect', function() {
-	console.log("Connected to the default server!");
+	console.log("Connected to the server!");
 	
 	// Sure it will run after the wallet is loaded
 	walletLoaded(function (){

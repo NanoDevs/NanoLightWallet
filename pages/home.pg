@@ -37,12 +37,13 @@
   display: block;
   list-style: none;
   padding: 0;
-  height: 45vh;
+  height: 48vh;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 10vh;
+  margin-top: 8vh;
   overflow-y: auto;
   padding-right: 6px;
+  width: 90%;
 }
 .transactions::-webkit-scrollbar {
   width: 6px;
@@ -72,27 +73,35 @@
 </style>
 <script>
 function update(){
-	setTimeout(update, 100);
-	if (typeof balance != 'undefined') {
-		$("#blvl").html(balance.toFixed(6)+" XRB");
-	}
-	if (typeof txhistory != 'undefined') {
-		//console.log(addresses[0]);
-		//blks = wallet.getLastNBlocks(addresses[0], 20, 0);
-		var html = '';
-		for(let i in txhistory){
-			html += '<li class="transaction">' +
-                        '<div class="transaction-type">' +
-                            txhistory[i].getType() +
-                        '</div>' +
-                        '<div class="transaction-amount">' +
-                            txhistory[i].getAmount().over("1000000000000000000000000").toJSNumber() / 1000000 +
-                    ' XRB</div></li>';
+	if (currentPage == "home") {
+		setTimeout(update, 150);
+		if (typeof balance != 'undefined') {
+			if ($("#blvl").html() != balance.toFixed(6)+" XRB") {
+				$("#blvl").html(balance.toFixed(6)+" XRB");
+			}
 		}
-		$('#transactions').html(html);
-	}
-	if (typeof price != 'undefined' && typeof balance != 'undefined') {
-		$("#blvf").html("$ "+balance.times(price).toFixed(2)+" USD");
+		if (typeof txhistory != 'undefined') {
+			//console.log(addresses[0]);
+			//blks = wallet.getLastNBlocks(addresses[0], 20, 0);
+			var html = '';
+			for(let i in txhistory){
+				html += '<li class="transaction">' +
+							'<div class="transaction-type">' +
+								txhistory[i].getType() +
+							'</div>' +
+							'<div class="transaction-amount">' +
+								txhistory[i].getAmount().over("1000000000000000000000000").toJSNumber() / 1000000 +
+						' XRB</div></li>';
+			}
+			if ($('#transactions').html() != html) {
+				$('#transactions').html(html);
+			}
+		}
+		if (typeof price != 'undefined' && typeof balance != 'undefined') {
+			if ($("#blvf").html() != "$ "+balance.times(price).toFixed(2)+" USD") {
+				$("#blvf").html("$ "+balance.times(price).toFixed(2)+" USD");
+			}
+		}
 	}
 }
 update();
