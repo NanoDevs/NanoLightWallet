@@ -89,6 +89,7 @@
 
 <script>
   function update() {
+    setTimeout(update, 100);
     if (typeof balance != 'undefined') {
       $("#blvl").html(balance.toFixed(6) + " XRB");
     } else {
@@ -125,5 +126,4 @@
 
   }
   update();
-  setTimeout(update, 100);
 </script>
