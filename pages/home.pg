@@ -122,8 +122,6 @@
       $("#blvf").html("0.00 USD");
     }
 
-    $('#thetable tbody').html(html);
-
   }
   update();
 </script>
