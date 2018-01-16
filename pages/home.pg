@@ -14,6 +14,7 @@
     color: rgba(255, 255, 255, 0.9);
     letter-spacing: 1.2px;
   }
+
   #bltx {
     text-align: center;
     font-size: 15px;
@@ -21,6 +22,7 @@
     user-select: none;
     cursor: default;
   }
+
   #blvl {
     text-align: center;
     color: #def58c;
@@ -29,21 +31,25 @@
     font-family: 'Montserrat';
     letter-spacing: 1.2px;
   }
+
   #blvf {
     text-align: center;
     color: rgba(170, 221, 221, 0.69);
     font-family: 'Montserrat';
     letter-spacing: 1.2px;
   }
+
   table {
     border-collapse: collapse;
     margin-left: auto;
     margin-right: auto;
     margin-top: 10vh;
   }
+
   table::-webkit-scrollbar {
     display: none;
   }
+
   tbody {
     height: 45vh;
     display: block;
@@ -51,9 +57,11 @@
     margin-left: auto;
     margin-right: auto;
   }
+
   tbody::-webkit-scrollbar {
     display: none;
   }
+
   td,
   th {
     padding: 15px 10px;
@@ -62,19 +70,21 @@
     width: 21vw;
     text-transform: uppercase;
   }
+
   td {
     font-size: 11px;
     text-align: right;
     letter-spacing: 1.3px;
     font-weight: lighter;
   }
+
   td.left {
     text-align: left;
   }
+
   tr.received {
     color: #def58c;
   }
-
 </style>
 
 <script>
@@ -88,7 +98,20 @@
       //console.log(addresses[0]); blks = wallet.getLastNBlocks(addresses[0], 20, 0);
       var html = '';
       for (let i in txhistory) {
-        html += '<tr><td>' + txhistory[i].getType() + '</td><td>' + txhistory[i].getAmount().over("1000000000000000000000000").toJSNumber() / 1000000 + ' XRB</td></tr>';
+        let cls = txhistory[i].getType().toLowerCase();
+        let signal;
+        if (cls === 'received') {
+          signal = '+'
+        } else {
+          signal = '-'
+        }
+
+        // this var @date shoul be resolved with the txhistory[i] object, and not hard coded
+        let date = Date.now();
+
+        html += '<tr class=' + cls + '><td class="left">' + date + '</td><td>' + txhistory[i].getType() +
+          '</td><td>' + txhistory[i].getAmount().over(
+            "1000000000000000000000000").toJSNumber() / 1000000 + ' XRB</td></tr>';
       }
       $('#thetable tr').html(html);
     }
@@ -98,63 +121,6 @@
       $("#blvf").html("0.00 USD");
     }
 
-    // DEV
-
-    txhistory = [
-      {
-        transaction: 'Received',
-        ammount: '100',
-        time: Date.now()
-      }, {
-        transaction: 'Sent',
-        ammount: '100',
-        time: Date.now()
-      }, {
-        transaction: 'Received',
-        ammount: '100',
-        time: Date.now()
-      }, {
-        transaction: 'Sent',
-        ammount: '100',
-        time: Date.now()
-      }, {
-        transaction: 'Received',
-        ammount: '100',
-        time: Date.now()
-      }, {
-        transaction: 'Received',
-        ammount: '100',
-        time: Date.now()
-      }, {
-        transaction: 'Received',
-        ammount: '100',
-        time: Date.now()
-      }, {
-        transaction: 'Received',
-        ammount: '100',
-        time: Date.now()
-      }, {
-        transaction: 'Received',
-        ammount: '100',
-        time: Date.now()
-      }, {
-        transaction: 'Received',
-        ammount: '100',
-        time: Date.now()
-      }
-    ];
-
-    for (let i in txhistory) {
-      let cls = txhistory[i].transaction.toLowerCase();
-      let signal;
-      if (cls === 'received') {
-        signal = '+'
-      } else {
-        signal = '-'
-      }
-
-      html += '<tr class=' + cls + '><td class="left">' + txhistory[i].time + '</td><td>' + txhistory[i].transaction + '</td><td>' + signal + txhistory[i].ammount + ' XRB</td></tr>';
-    }
     $('#thetable tbody').html(html);
 
   }
