@@ -1,4 +1,4 @@
-Work in progress.
+DEPRECATED!!! DO NOT USE
 
 ![alt text](https://raw.githubusercontent.com/AugustoResende/RaiLightWallet/master/src/img/current_preview.png)
 
